@@ -10,8 +10,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.MeshView;
+import javafx.stage.FileChooser;
 import simple3d.Director;
 import simple3d.SceneState;
+import simple3d.Simple3D;
 import simple3d.io.MeshViewIO;
 import simple3d.io.MeshViewIO2;
 
@@ -167,8 +169,20 @@ public class Default extends SceneState {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    MeshViewIO2.write(selectedMeshView, "tmp/Suzanne.bin");
-                    System.out.println("Wrote binary file");
+                    FileChooser fileChooser = new FileChooser();
+
+                    //Set extension filter
+                    fileChooser.setTitle("Export MeshView");
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Binary files (*.bin)", "*.bin");
+                    fileChooser.getExtensionFilters().add(extFilter);
+
+                    //Show save file dialog
+                    File file = fileChooser.showSaveDialog(director.getSubScene().getScene().getWindow());
+
+                    if(file != null){
+                        MeshViewIO2.write(selectedMeshView, file);
+                        System.out.println("Wrote binary file");
+                    }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     e.printStackTrace();

@@ -35,10 +35,9 @@ public class MeshViewIO2 {
     //(#f0) v0 n0 t0 v1 n1 t1 v2 n2 t2
     //(#f1) v0 n0 t0 v1 n1 t1 v2 n2 t2
     //..
-    public static void write(MeshView meshView, String path) {
+    public static void write(MeshView meshView, File outFile) {
         ObjectOutputStream oos = null;
         try {
-            File outFile = new File(path);
             FileOutputStream fos = new FileOutputStream(outFile);
             oos = new ObjectOutputStream(fos);
 
