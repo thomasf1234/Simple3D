@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<root>
+  <vertex index="1"/>
+    <another index="1"/>
+    <another index="2"/>
+  <vertex index="2"/>
+  <polygons/>
+</root>
