@@ -2,8 +2,6 @@ package simple3d.scene_states;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -12,10 +10,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.MeshView;
-import simple3d.CameraMan;
 import simple3d.Director;
 import simple3d.SceneState;
-import simple3d.loaders.MeshViewLoader;
+import simple3d.io.MeshViewIO;
+import simple3d.io.MeshViewIO2;
+
+import java.io.File;
 
 /**
  * Created by tfisher on 07/03/2017.
@@ -34,15 +34,19 @@ public class Default extends SceneState {
         }
     }
 
-    public void onMouseClick(MouseEvent event) {
+    public SceneState onMouseClick(MouseEvent event) {
         Node selectedNode = event.getPickResult().getIntersectedNode();
         if (selectedNode != null && selectedNode != director.getSubScene()) {
-            if (event.isSecondaryButtonDown()) {
-
+            if (event.getButton() == MouseButton.SECONDARY) {
+                if (selectedNode instanceof MeshView) {
+                    MeshView selectedMeshView = (MeshView) selectedNode;
+                    ContextMenu contextMenu = getOnMeshViewRightClickContextMenu(selectedMeshView);
+                    contextMenu.show(director.getSubScene(), event.getScreenX(), event.getScreenY());
+                }
             } else {
-                System.out.println(selectedNode.toString());
                 director.getCameraMan().setTarget(selectedNode.getTranslateX(), selectedNode.getTranslateY(), selectedNode.getTranslateZ());
                 director.getCameraMan().faceTarget();
+                return new Selected(director, (MeshView) selectedNode);
             }
         } else {
             if (event.getButton() == MouseButton.SECONDARY) {
@@ -50,6 +54,8 @@ public class Default extends SceneState {
                 contextMenu.show(director.getSubScene(), event.getScreenX(), event.getScreenY());
             }
         }
+
+        return this;
     }
 
     public void onMouseMove(MouseEvent event) {
@@ -67,9 +73,9 @@ public class Default extends SceneState {
     private ContextMenu getRightClickContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem add = new MenuItem("Add Cube");
-        MenuItem copy = new MenuItem("Add Suzanne");
-        MenuItem paste = new MenuItem("Paste");
-        contextMenu.getItems().addAll(add, copy, paste);
+        MenuItem addSuzanne = new MenuItem("Add Suzanne");
+        MenuItem addSuzanneBinary = new MenuItem("Add Suzanne Binary");
+        contextMenu.getItems().addAll(add, addSuzanne, addSuzanneBinary);
         contextMenu.setAutoHide(true);
         add.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -78,7 +84,7 @@ public class Default extends SceneState {
                 MeshView cubeMeshView = null;
 
                 try {
-                    cubeMeshView = MeshViewLoader.load("src/simple3d/resources/Cube.xml");
+                    cubeMeshView = MeshViewIO.read("src/simple3d/resources/Cube.xml");
                     director.add(cubeMeshView, (float) 0.0, (float) 0.0, (float) 0.0);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -97,17 +103,72 @@ public class Default extends SceneState {
             }
         });
 
-        copy.setOnAction(new EventHandler<ActionEvent>() {
+        addSuzanne.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 MeshView suzanneMeshView = null;
 
                 try {
-                    suzanneMeshView = MeshViewLoader.load("src/simple3d/resources/Suzanne.xml");
+                    suzanneMeshView = MeshViewIO.read("src/simple3d/resources/Suzanne.xml");
                     suzanneMeshView.setScaleX(5.0);
                     suzanneMeshView.setScaleY(5.0);
                     suzanneMeshView.setScaleZ(5.0);
                     director.add(suzanneMeshView, (float) 0.0, (float) 0.0, (float) 0.0);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        addSuzanneBinary.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                MeshView suzanneMeshView = null;
+
+                try {
+                    suzanneMeshView = MeshViewIO2.read("tmp/Suzanne.bin");
+                    suzanneMeshView.setScaleX(5.0);
+                    suzanneMeshView.setScaleY(5.0);
+                    suzanneMeshView.setScaleZ(5.0);
+                    director.add(suzanneMeshView, (float) 0.0, (float) 0.0, (float) 0.0);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+
+        return contextMenu;
+    }
+
+    private ContextMenu getOnMeshViewRightClickContextMenu(MeshView selectedMeshView) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem export = new MenuItem("Export");
+        MenuItem exportBinary = new MenuItem("Export Binary");
+        contextMenu.getItems().addAll(export, exportBinary);
+        contextMenu.setAutoHide(true);
+        export.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    File outFile = MeshViewIO.write(selectedMeshView);
+                    System.out.println(outFile.getAbsolutePath());
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        exportBinary.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    MeshViewIO2.write(selectedMeshView, "tmp/Suzanne.bin");
+                    System.out.println("Wrote binary file");
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     e.printStackTrace();

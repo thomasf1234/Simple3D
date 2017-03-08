@@ -25,7 +25,7 @@ public class Director {
         root.getChildren().addAll(nonEditGroup, editGroup);
 
         //create empty subscene
-        this.subScene = new SubScene(root, 800, 600, true, SceneAntialiasing.BALANCED);
+        this.subScene = new SubScene(root, 800, 600, true, SceneAntialiasing.DISABLED);
         subScene.setFill(Color.BLACK);
 
         //add grid

@@ -8,7 +8,7 @@ import javafx.scene.input.ScrollEvent;
  */
 public abstract class SceneState {
     public abstract void onScroll(ScrollEvent event);
-    public abstract void onMouseClick(MouseEvent event);
+    public abstract SceneState onMouseClick(MouseEvent event);
     public abstract void onMouseMove(MouseEvent event);
     public abstract void onMouseDrag(double mouseXOld, double mouseYOld, double mouseXNew, double mouseYNew);
 }
