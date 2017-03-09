@@ -7,6 +7,7 @@ import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.MeshView;
 import simple3d.factories.GridFactory;
+import simple3d.factories.LineFactory;
 
 /**
  * Created by tfisher on 06/03/2017.
@@ -31,6 +32,12 @@ public class Director {
         //add grid
         MeshView gridMeshView = GridFactory.build(10, 20);
         nonEditGroup.getChildren().add(gridMeshView);
+
+        MeshView xAxisMeshView = LineFactory.build(new Point3D(-100, 0, 0), new Point3D(100, 0, 0), Color.RED);
+        MeshView yAxisMeshView = LineFactory.build(new Point3D(0, -100, 0), new Point3D(0, 100, 0), Color.GREEN);
+        MeshView zAxisMeshView = LineFactory.build(new Point3D(0, 0, -100), new Point3D(0, 0, 100), Color.BLUE);
+
+        nonEditGroup.getChildren().addAll(xAxisMeshView, yAxisMeshView, zAxisMeshView);
 
         //add cameraman
         this.cameraMan = new CameraMan(subScene);
