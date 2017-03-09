@@ -122,15 +122,13 @@ public class MeshViewIO2 {
         }
     }
 
-    public static MeshView read(String path)  {
+    public static MeshView read(File inputFile)  {
         MeshView meshView = null;
         ObjectInputStream ois = null;
 
         try {
-            File outFile = new File(path);
-
-            if (outFile.exists()) {
-                FileInputStream fis = new FileInputStream(outFile);
+            if (inputFile.exists()) {
+                FileInputStream fis = new FileInputStream(inputFile);
                 ois = new ObjectInputStream(fis);
 
                 int pointsCount = ois.readInt() * 3;

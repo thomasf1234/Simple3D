@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -74,44 +75,40 @@ public class Default extends SceneState {
 
     private ContextMenu getRightClickContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem add = new MenuItem("Add Cube");
-        MenuItem addSuzanne = new MenuItem("Add Suzanne");
-        MenuItem addSuzanneBinary = new MenuItem("Add Suzanne Binary");
-        contextMenu.getItems().addAll(add, addSuzanne, addSuzanneBinary);
+        //Sub-Menu
+        Menu addMenu = new Menu("Add");
+        MenuItem addCubeMenuItem = new MenuItem("Cube");
+        MenuItem addSuzanneMenuItem = new MenuItem("Suzanne");
+        addMenu.getItems().addAll(addCubeMenuItem, addSuzanneMenuItem);
+
+        MenuItem importMenuItem = new MenuItem("Import");
+        contextMenu.getItems().addAll(addMenu, importMenuItem);
         contextMenu.setAutoHide(true);
-        add.setOnAction(new EventHandler<ActionEvent>() {
+        addCubeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Box box = new Box(10, 10, 10);
                 MeshView cubeMeshView = null;
 
                 try {
-                    cubeMeshView = MeshViewIO.read("src/simple3d/resources/Cube.xml");
+                    cubeMeshView = MeshViewIO2.read(new File("src/simple3d/resources/Cube.bin"));
+                    cubeMeshView.setScaleX(5.0);
+                    cubeMeshView.setScaleY(5.0);
+                    cubeMeshView.setScaleZ(5.0);
                     director.add(cubeMeshView, (float) 0.0, (float) 0.0, (float) 0.0);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     e.printStackTrace();
                 }
-
-//                Point2D subSceneCenter = director.getSubSceneAbsoluteCenter2D();
-//                CameraMan cameraMan = director.getCameraMan();
-//                Point3D newPos = cameraMan.getPosition().add(cameraMan.getForward().multiply(-(cameraMan.getY()/cameraMan.getForward().getY())));
-//                box.setTranslateX(newPos.getX());
-//                box.setTranslateY(newPos.getY());
-//                box.setTranslateZ(newPos.getZ());
-//                director.add(box, (float) newPos.getX(), (float) newPos.getY(), (float) newPos.getZ());
-//
-//                System.out.println("Adding box...");
             }
         });
 
-        addSuzanne.setOnAction(new EventHandler<ActionEvent>() {
+        addSuzanneMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 MeshView suzanneMeshView = null;
 
                 try {
-                    suzanneMeshView = MeshViewIO.read("src/simple3d/resources/Suzanne.xml");
+                    suzanneMeshView = MeshViewIO2.read(new File("src/simple3d/resources/Suzanne.bin"));
                     suzanneMeshView.setScaleX(5.0);
                     suzanneMeshView.setScaleY(5.0);
                     suzanneMeshView.setScaleZ(5.0);
@@ -123,17 +120,31 @@ public class Default extends SceneState {
             }
         });
 
-        addSuzanneBinary.setOnAction(new EventHandler<ActionEvent>() {
+        importMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                MeshView suzanneMeshView = null;
+                MeshView meshView = null;
 
                 try {
-                    suzanneMeshView = MeshViewIO2.read("tmp/Suzanne.bin");
-                    suzanneMeshView.setScaleX(5.0);
-                    suzanneMeshView.setScaleY(5.0);
-                    suzanneMeshView.setScaleZ(5.0);
-                    director.add(suzanneMeshView, (float) 0.0, (float) 0.0, (float) 0.0);
+                    FileChooser fileChooser = new FileChooser();
+
+                    //Set extension filter
+                    fileChooser.setTitle("Import MeshView");
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Binary files (*.bin)", "*.bin");
+                    fileChooser.getExtensionFilters().add(extFilter);
+
+                    //Show save file dialog
+                    File file = fileChooser.showOpenDialog(director.getSubScene().getScene().getWindow());
+
+                    if(file != null){
+                        meshView = MeshViewIO2.read(file);
+                        System.out.println("Read binary file");
+                    }
+
+                    meshView.setScaleX(5.0);
+                    meshView.setScaleY(5.0);
+                    meshView.setScaleZ(5.0);
+                    director.add(meshView, (float) 0.0, (float) 0.0, (float) 0.0);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     e.printStackTrace();
@@ -149,23 +160,10 @@ public class Default extends SceneState {
     private ContextMenu getOnMeshViewRightClickContextMenu(MeshView selectedMeshView) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem export = new MenuItem("Export");
-        MenuItem exportBinary = new MenuItem("Export Binary");
-        contextMenu.getItems().addAll(export, exportBinary);
+        contextMenu.getItems().addAll(export);
         contextMenu.setAutoHide(true);
-        export.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    File outFile = MeshViewIO.write(selectedMeshView);
-                    System.out.println(outFile.getAbsolutePath());
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        });
 
-        exportBinary.setOnAction(new EventHandler<ActionEvent>() {
+        export.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
