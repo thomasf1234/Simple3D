@@ -105,7 +105,6 @@ public class CameraMan {
     }
 
     public Point3D getUp() {
-        //return Rotate.Y_AXIS.multiply(-1);
         return getRight().crossProduct(getForward()).normalize();
     }
 

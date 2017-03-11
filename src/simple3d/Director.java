@@ -1,13 +1,19 @@
 package simple3d;
 
 import javafx.collections.ObservableList;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Sphere;
+import javafx.stage.Stage;
 import simple3d.factories.GridFactory;
 import simple3d.factories.LineFactory;
+import simple3d.factories.PointFactory;
 
 /**
  * Created by tfisher on 06/03/2017.
@@ -18,8 +24,10 @@ public class Director {
     private Group nonEditGroup;
     private SubScene subScene;
     private CameraMan cameraMan;
+    private Stage primaryStage;
 
-    public Director() {
+    public Director(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         this.root = new Group();
         this.editGroup = new Group();
         this.nonEditGroup = new Group();
@@ -29,9 +37,12 @@ public class Director {
         this.subScene = new SubScene(root, 800, 600, true, SceneAntialiasing.DISABLED);
         subScene.setFill(Color.BLACK);
 
-        //add grid
-        MeshView gridMeshView = GridFactory.build(10, 20);
-        nonEditGroup.getChildren().add(gridMeshView);
+        for (int i = -10; i< 11; ++i) {
+            if (i != 0) {
+                nonEditGroup.getChildren().add(LineFactory.build(new Point3D(-100, 0, 10*i), new Point3D(100, 0, 10*i), Color.GRAY));
+                nonEditGroup.getChildren().add(LineFactory.build(new Point3D(10*i, 0, -100), new Point3D(10*i, 0, 100), Color.GRAY));
+            }
+        }
 
         MeshView xAxisMeshView = LineFactory.build(new Point3D(-100, 0, 0), new Point3D(100, 0, 0), Color.RED);
         MeshView yAxisMeshView = LineFactory.build(new Point3D(0, -100, 0), new Point3D(0, 100, 0), Color.GREEN);
@@ -71,7 +82,18 @@ public class Director {
     }
 
     public void add(Node node, float x, float y, float z) {
+        node.setTranslateX(x);
+        node.setTranslateY(y);
+        node.setTranslateZ(z);
         editGroup.getChildren().add(node);
+    }
+
+    public void add(Node node) {
+        editGroup.getChildren().add(node);
+    }
+
+    public void remove(Node node) {
+        editGroup.getChildren().remove(node);
     }
 
     public Point2D getSubSceneAbsoluteCenter2D() {
@@ -79,5 +101,13 @@ public class Director {
                 subScene.getTranslateY() + subScene.getHeight()/2.0);
 
         return s2DCenter;
+    }
+
+    public boolean isSelectable(Node node) {
+        return editGroup.getChildren().contains(node);
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 }

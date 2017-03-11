@@ -1,30 +1,39 @@
 package simple3d;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.MeshView;
 import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simple3d.scene_states.Default;
+
+import javax.tools.Tool;
 
 public class Simple3D extends Application {
     private SceneState sceneState;
     private double mouseXOld = 0;
     private double mouseYOld = 0;
     private Text fps;
-    private Node selected;
     private BorderPane pane;
+
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Director director = new Director();
+        primaryStage.setAlwaysOnTop(true);
+        Director director = new Director(primaryStage);
         this.sceneState = new Default(director);
         handleKeyboard(director);
         setMouseEvents(director);
@@ -40,7 +49,7 @@ public class Simple3D extends Application {
         FrameRateUpdater frameRateUpdater = new FrameRateUpdater(fps);
         frameRateUpdater.start();
 
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         primaryStage.setTitle("Simple3D");
         primaryStage.setScene(scene);
 
@@ -64,39 +73,7 @@ public class Simple3D extends Application {
         director.getSubScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                CameraMan cameraMan = director.getCameraMan();
-
-                switch (event.getCode()) {
-                    case L:
-                        cameraMan.faceTarget();
-                        break;
-                    case F:
-                        cameraMan.moveForward(3);
-                        break;
-                    case B:
-                        cameraMan.moveForward(-3);
-                        break;
-                    case UP:
-                        cameraMan.moveUp(3);
-                        break;
-                    case DOWN:
-                        cameraMan.moveUp(-3);
-                        break;
-                    case LEFT:
-                        cameraMan.moveRight(-3);
-                        break;
-                    case RIGHT:
-                        cameraMan.moveRight(3);
-                        break;
-                    case O:
-                        cameraMan.reset();
-                        break;
-                    case R:
-                        cameraMan.removeTarget();
-                        break;
-
-                }
-
+                sceneState.onKeyPressed(event);
                 event.consume();
             }
         });
@@ -121,7 +98,7 @@ public class Simple3D extends Application {
                 if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
                     sceneState = sceneState.onMouseClick(event);
                 } else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                    sceneState.onMouseDrag(mouseXOld, mouseYOld, mouseXNew, mouseYNew);
+                    sceneState.onMouseDrag(event, mouseXOld, mouseYOld, mouseXNew, mouseYNew);
                 } else if (event.getEventType() == MouseEvent.MOUSE_MOVED) {
                     sceneState.onMouseMove(event);
                 }
