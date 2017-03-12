@@ -24,10 +24,8 @@ public class Director {
     private Group nonEditGroup;
     private SubScene subScene;
     private CameraMan cameraMan;
-    private Stage primaryStage;
 
-    public Director(Stage primaryStage) {
-        this.primaryStage = primaryStage;
+    public Director() {
         this.root = new Group();
         this.editGroup = new Group();
         this.nonEditGroup = new Group();
@@ -105,9 +103,5 @@ public class Director {
 
     public boolean isSelectable(Node node) {
         return editGroup.getChildren().contains(node);
-    }
-
-    public Stage getPrimaryStage() {
-        return primaryStage;
     }
 }

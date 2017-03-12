@@ -7,48 +7,43 @@ import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.paint.Material;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.*;
+import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Sphere;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import simple3d.CameraMan;
 import simple3d.Director;
 import simple3d.SceneState;
-import simple3d.Simple3D;
-import simple3d.io.MeshViewIO;
+import simple3d.SimpleScene;
 import simple3d.io.MeshViewIO2;
 import simple3d.util.MeshUtils;
-import javafx.scene.paint.Color;
 
-import java.awt.*;
-import java.awt.Label;
 import java.io.File;
 
 /**
  * Created by tfisher on 07/03/2017.
  */
 public class Default extends SceneState {
-    private Director director;
-    private MeshView selectedMeshView;
-    private Stage meshViewStage;
+    protected Director director;
 
-    public Default(Director director) {
+    public Default(SimpleScene simpleScene, Director director) {
+        super(simpleScene);
         this.director = director;
+        simpleScene.getPane().setRight(null);
     }
 
     public void onKeyPressed(KeyEvent event) {
         CameraMan cameraMan = director.getCameraMan();
 
         switch (event.getCode()) {
-            case F:
-                cameraMan.setTarget(selectedMeshView.getTranslateX(), selectedMeshView.getTranslateY(), selectedMeshView.getTranslateZ());
+            case C:
+                cameraMan.setTarget(Point3D.ZERO);
                 cameraMan.faceTarget();
                 break;
             case UP:
@@ -82,36 +77,26 @@ public class Default extends SceneState {
     }
 
     public SceneState onMouseClick(MouseEvent event) {
+        SceneState nextScene = this;
         Node selectedNode = event.getPickResult().getIntersectedNode();
-        if (selectedNode != null && director.isSelectable(selectedNode)) {
-            if (selectedNode instanceof MeshView) {
-                if (selectedNode == selectedMeshView) {
-                    if (meshViewStage == null) {
-                        meshViewStage = openMeshDialog(selectedMeshView);
-                    }
-                } else {
-                    if (meshViewStage != null) {
-                        meshViewStage.close();
-                    }
 
-                    this.selectedMeshView = (MeshView) selectedNode;
-                    meshViewStage = openMeshDialog(selectedMeshView);
-                }
-
-                if (event.getButton() == MouseButton.SECONDARY) {
-                    MeshView selectedMeshView = (MeshView) selectedNode;
-                    ContextMenu contextMenu = getOnMeshViewRightClickContextMenu(selectedMeshView);
-                    contextMenu.show(director.getSubScene(), event.getScreenX(), event.getScreenY());
-                }
-            }
-        } else {
-            if (event.getButton() == MouseButton.SECONDARY) {
+        if (event.getButton() == MouseButton.SECONDARY) {
+            if (selectedNode != null && director.isSelectable(selectedNode)) {
+                MeshView selectedMeshView = (MeshView) selectedNode;
+                ContextMenu contextMenu = getOnMeshViewRightClickContextMenu(selectedMeshView);
+                contextMenu.show(director.getSubScene(), event.getScreenX(), event.getScreenY());
+            } else {
                 ContextMenu contextMenu = getRightClickContextMenu();
                 contextMenu.show(director.getSubScene(), event.getScreenX(), event.getScreenY());
             }
+        } else {
+            if (selectedNode != null && director.isSelectable(selectedNode)) {
+                MeshView selectedMeshView = (MeshView) selectedNode;
+                nextScene = new Selected(simpleScene, director, selectedMeshView);
+            }
         }
 
-        return this;
+        return nextScene;
     }
 
     public void onMouseMove(MouseEvent event) {
@@ -134,7 +119,7 @@ public class Default extends SceneState {
     }
 
 
-    private ContextMenu getRightClickContextMenu() {
+    protected ContextMenu getRightClickContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         //Sub-Menu
         Menu addMenu = new Menu("Add");
@@ -220,7 +205,7 @@ public class Default extends SceneState {
         return contextMenu;
     }
 
-    private ContextMenu getOnMeshViewRightClickContextMenu(MeshView selectedMeshView) {
+    protected ContextMenu getOnMeshViewRightClickContextMenu(MeshView selectedMeshView) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem editMenuItem = new MenuItem("Edit");
         MenuItem exportMenuItem = new MenuItem("Export");
@@ -294,44 +279,5 @@ public class Default extends SceneState {
         });
 
         return contextMenu;
-    }
-
-    private Stage openMeshDialog(MeshView selectedMeshView) {
-        javafx.scene.control.Label label = new javafx.scene.control.Label("Selected: " + selectedMeshView.getProperties().get("name"));
-
-        final CheckBox checkBox = new CheckBox("Wireframe");
-
-        if (selectedMeshView == null) {
-            checkBox.setSelected(false);
-            checkBox.setDisable(true);
-        } else {
-            checkBox.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    selectedMeshView.setDrawMode(checkBox.isSelected() ? DrawMode.LINE : DrawMode.FILL);
-                }
-            });
-
-            if (selectedMeshView.getDrawMode() == DrawMode.LINE) {
-                checkBox.setSelected(true);
-            } else {
-                checkBox.setSelected(false);
-            }
-
-        }
-
-        ToolBar toolBar = new ToolBar(label, checkBox);
-        toolBar.setOrientation(Orientation.VERTICAL);
-
-        Stage stage = new Stage();
-        stage.setX(0);
-        stage.setY(0);
-        stage.setAlwaysOnTop(true);
-        stage.setTitle("Mesh Edit");
-        stage.setScene(new Scene(toolBar));
-        stage.initOwner(director.getPrimaryStage());
-        stage.show();
-
-        return stage;
     }
 }

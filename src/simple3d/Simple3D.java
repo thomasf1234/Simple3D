@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SubScene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -27,28 +28,35 @@ public class Simple3D extends Application {
     private double mouseXOld = 0;
     private double mouseYOld = 0;
     private Text fps;
-    private BorderPane pane;
-
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        primaryStage.setAlwaysOnTop(true);
-        Director director = new Director(primaryStage);
-        this.sceneState = new Default(director);
-        handleKeyboard(director);
-        setMouseEvents(director);
-        this.pane = new BorderPane();
-        pane.setCenter(director.getSubScene());
-        Scene scene = new Scene(pane);
+        BorderPane outerPane = new BorderPane();
+        SimpleScene scene = new SimpleScene(outerPane);
 
         fps = new Text();
         fps.setFill(Color.BLACK);
         fps.setFontSmoothingType(FontSmoothingType.LCD);
-        pane.setBottom(fps);
-
         FrameRateUpdater frameRateUpdater = new FrameRateUpdater(fps);
         frameRateUpdater.start();
+        outerPane.setBottom(fps);
 
+        Director director = new Director();
+        this.sceneState = new Default(scene, director);
+
+        BorderPane innerPane = new BorderPane();
+
+        SubScene subScene = director.getSubScene();
+        subScene.heightProperty().bind(innerPane.heightProperty());
+        subScene.widthProperty().bind(innerPane.widthProperty());
+        innerPane.getChildren().add(subScene);
+        outerPane.setCenter(innerPane);
+
+        handleKeyboard(director);
+        setMouseEvents(director);
+
+        primaryStage.setMinWidth(800);
+        primaryStage.setMinHeight(600);
         primaryStage.setResizable(true);
         primaryStage.setTitle("Simple3D");
         primaryStage.setScene(scene);
