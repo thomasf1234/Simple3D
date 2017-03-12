@@ -71,13 +71,12 @@ public class Default extends SceneState {
 
     public void onScroll(ScrollEvent event) {
         double deltaY = event.getDeltaY();
-        if (director.getCameraMan().getTargetDistance() > deltaY) {
-            director.getCameraMan().moveForward(deltaY/10);
+        if (director.getCameraMan().getTargetDistance() > deltaY/10) {
+            director.getCameraMan().moveForward(deltaY/100);
         }
     }
 
-    public SceneState onMouseClick(MouseEvent event) {
-        SceneState nextScene = this;
+    public void onMouseClick(MouseEvent event) {
         Node selectedNode = event.getPickResult().getIntersectedNode();
 
         if (event.getButton() == MouseButton.SECONDARY) {
@@ -92,11 +91,9 @@ public class Default extends SceneState {
         } else {
             if (selectedNode != null && director.isSelectable(selectedNode)) {
                 MeshView selectedMeshView = (MeshView) selectedNode;
-                nextScene = new Selected(simpleScene, director, selectedMeshView);
+                setNextSceneState(new Selected(simpleScene, director, selectedMeshView));
             }
         }
-
-        return nextScene;
     }
 
     public void onMouseMove(MouseEvent event) {
@@ -137,9 +134,9 @@ public class Default extends SceneState {
 
                 try {
                     cubeMeshView = MeshViewIO2.read(new File("src/simple3d/resources/Cube.bin"));
-                    cubeMeshView.setScaleX(5.0);
-                    cubeMeshView.setScaleY(5.0);
-                    cubeMeshView.setScaleZ(5.0);
+                    //cubeMeshView.setScaleX(5.0);
+                    //cubeMeshView.setScaleY(5.0);
+                    //cubeMeshView.setScaleZ(5.0);
                     cubeMeshView.getProperties().put("name", "Cube001");
                     director.add(cubeMeshView, (float) 0.0, (float) 0.0, (float) 0.0);
                 } catch (Exception e) {
@@ -156,9 +153,9 @@ public class Default extends SceneState {
 
                 try {
                     suzanneMeshView = MeshViewIO2.read(new File("src/simple3d/resources/Suzanne.bin"));
-                    suzanneMeshView.setScaleX(5.0);
-                    suzanneMeshView.setScaleY(5.0);
-                    suzanneMeshView.setScaleZ(5.0);
+//                    suzanneMeshView.setScaleX(5.0);
+//                    suzanneMeshView.setScaleY(5.0);
+//                    suzanneMeshView.setScaleZ(5.0);
                     suzanneMeshView.getProperties().put("name", "Suzanne001");
                     director.add(suzanneMeshView, (float) 0.0, (float) 0.0, (float) 0.0);
                 } catch (Exception e) {
@@ -217,23 +214,24 @@ public class Default extends SceneState {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    Point3D[] vertices = MeshUtils.getVertices(selectedMeshView);
-
-
-                    for (Point3D vertex : vertices) {
-                        Sphere point = new Sphere(0.05);
-                        point.setMaterial(new PhongMaterial(Color.RED));
-                        //Director add group to hold Selected Mesh, this is a copy of the original that we can edit, we also temp hide the original. (a hidden group perhaps)
-                        selectedMeshView.setDrawMode(DrawMode.LINE);
-                        point.getTransforms().addAll(selectedMeshView.getTransforms());
-                        point.setTranslateX(vertex.getX() * selectedMeshView.getScaleX());
-                        point.setTranslateY(vertex.getY() * selectedMeshView.getScaleY());
-                        point.setTranslateZ(vertex.getZ() * selectedMeshView.getScaleZ());
-                        point.setRotationAxis(selectedMeshView.getRotationAxis());
-                        point.setRotate(selectedMeshView.getRotate());
-
-                        director.add(point);
-                    }
+                    setNextSceneState(new EditMesh(simpleScene, director, selectedMeshView));
+//                    Point3D[] vertices = MeshUtils.getVertices(selectedMeshView);
+//
+//
+//                    for (Point3D vertex : vertices) {
+//                        Sphere point = new Sphere(0.05);
+//                        point.setMaterial(new PhongMaterial(Color.RED));
+//                        //Director add group to hold Selected Mesh, this is a copy of the original that we can edit, we also temp hide the original. (a hidden group perhaps)
+//                        selectedMeshView.setDrawMode(DrawMode.LINE);
+//                        point.getTransforms().addAll(selectedMeshView.getTransforms());
+//                        point.setTranslateX(vertex.getX() * selectedMeshView.getScaleX());
+//                        point.setTranslateY(vertex.getY() * selectedMeshView.getScaleY());
+//                        point.setTranslateZ(vertex.getZ() * selectedMeshView.getScaleZ());
+//                        point.setRotationAxis(selectedMeshView.getRotationAxis());
+//                        point.setRotate(selectedMeshView.getRotate());
+//
+//                        director.add(point);
+//                    }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     e.printStackTrace();

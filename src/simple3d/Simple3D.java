@@ -104,7 +104,7 @@ public class Simple3D extends Application {
                 double mouseYNew = event.getSceneY();
 
                 if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
-                    sceneState = sceneState.onMouseClick(event);
+                    sceneState.onMouseClick(event);
                 } else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                     sceneState.onMouseDrag(event, mouseXOld, mouseYOld, mouseXNew, mouseYNew);
                 } else if (event.getEventType() == MouseEvent.MOUSE_MOVED) {
@@ -113,6 +113,7 @@ public class Simple3D extends Application {
 
                 mouseXOld = mouseXNew;
                 mouseYOld = mouseYNew;
+                sceneState = sceneState.getNextSceneState();
                 event.consume();
             }
         };

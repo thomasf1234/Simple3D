@@ -37,14 +37,14 @@ public class Director {
 
         for (int i = -10; i< 11; ++i) {
             if (i != 0) {
-                nonEditGroup.getChildren().add(LineFactory.build(new Point3D(-100, 0, 10*i), new Point3D(100, 0, 10*i), Color.GRAY));
-                nonEditGroup.getChildren().add(LineFactory.build(new Point3D(10*i, 0, -100), new Point3D(10*i, 0, 100), Color.GRAY));
+                nonEditGroup.getChildren().add(LineFactory.build(new Point3D(-10, 0, 1*i), new Point3D(10, 0, 1*i), Color.GRAY));
+                nonEditGroup.getChildren().add(LineFactory.build(new Point3D(1*i, 0, -10), new Point3D(1*i, 0, 10), Color.GRAY));
             }
         }
 
-        MeshView xAxisMeshView = LineFactory.build(new Point3D(-100, 0, 0), new Point3D(100, 0, 0), Color.RED);
-        MeshView yAxisMeshView = LineFactory.build(new Point3D(0, -100, 0), new Point3D(0, 100, 0), Color.GREEN);
-        MeshView zAxisMeshView = LineFactory.build(new Point3D(0, 0, -100), new Point3D(0, 0, 100), Color.BLUE);
+        MeshView xAxisMeshView = LineFactory.build(new Point3D(-10, 0, 0), new Point3D(10, 0, 0), Color.RED);
+        MeshView yAxisMeshView = LineFactory.build(new Point3D(0, -10, 0), new Point3D(0, 10, 0), Color.GREEN);
+        MeshView zAxisMeshView = LineFactory.build(new Point3D(0, 0, -10), new Point3D(0, 0, 10), Color.BLUE);
 
         nonEditGroup.getChildren().addAll(xAxisMeshView, yAxisMeshView, zAxisMeshView);
 

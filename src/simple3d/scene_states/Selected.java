@@ -12,10 +12,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.Mesh;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
+import javafx.scene.shape.*;
+import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import simple3d.CameraMan;
 import simple3d.Director;
@@ -69,14 +67,17 @@ public class Selected extends Default {
             case R:
                 cameraMan.removeTarget();
                 break;
+            case K:
+                selectedMeshView.setRotationAxis(Rotate.Y_AXIS);
+                selectedMeshView.setRotate(10);
+                break;
             default:
                 break;
         }
     }
 
     @Override
-    public SceneState onMouseClick(MouseEvent event) {
-        SceneState nextScene = this;
+    public void onMouseClick(MouseEvent event) {
         Node selectedNode = event.getPickResult().getIntersectedNode();
 
         if (event.getButton() == MouseButton.SECONDARY) {
@@ -87,11 +88,20 @@ public class Selected extends Default {
             }
         } else {
             if (selectedNode != selectedMeshView) {
-                nextScene = new Default(simpleScene, director);
+                setNextSceneState(new Default(simpleScene, director));
             }
         }
+    }
 
-        return nextScene;
+    @Override
+    public void onMouseDrag(MouseEvent event, double mouseXOld, double mouseYOld, double mouseXNew, double mouseYNew) {
+        if (event.isControlDown()) {
+            Point3D newRight = director.getCameraMan().getRight().multiply((mouseXNew - mouseXOld)/50);
+            Point3D newUp = director.getCameraMan().getUp().multiply((- mouseYNew + mouseYOld)/50);
+            selectedMeshView.setTranslateX(selectedMeshView.getTranslateX() + newRight.getX() + newUp.getX());
+            selectedMeshView.setTranslateY(selectedMeshView.getTranslateY() + newRight.getY() + newUp.getY());
+            selectedMeshView.setTranslateZ(selectedMeshView.getTranslateZ() + newRight.getZ() + newUp.getZ());
+        }
     }
 
     protected void openMeshDialog(MeshView selectedMeshView) {
@@ -102,7 +112,13 @@ public class Selected extends Default {
         checkBox.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                selectedMeshView.setDrawMode(checkBox.isSelected() ? DrawMode.LINE : DrawMode.FILL);
+                if (checkBox.isSelected()) {
+                    selectedMeshView.setDrawMode(DrawMode.LINE);
+                    selectedMeshView.setCullFace(CullFace.NONE);
+                } else {
+                    selectedMeshView.setDrawMode(DrawMode.FILL);
+                    selectedMeshView.setCullFace(CullFace.BACK);
+                }
             }
         });
 
