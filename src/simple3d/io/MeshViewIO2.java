@@ -8,6 +8,7 @@ import javafx.collections.ObservableFloatArray;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
+import simple3d.SimpleMeshView;
 
 import java.io.*;
 
@@ -122,8 +123,8 @@ public class MeshViewIO2 {
         }
     }
 
-    public static MeshView read(File inputFile)  {
-        MeshView meshView = null;
+    public static SimpleMeshView read(File inputFile)  {
+        SimpleMeshView meshView = null;
         ObjectInputStream ois = null;
 
         try {
@@ -164,7 +165,7 @@ public class MeshViewIO2 {
                 triangleMesh.getTexCoords().setAll(textCoords);
                 triangleMesh.getFaces().setAll(faces);
 
-                meshView = new MeshView(triangleMesh);
+                meshView = new SimpleMeshView(triangleMesh);
                 meshView.setCullFace(CullFace.BACK);
                 meshView.setDrawMode(DrawMode.FILL);
                 PhongMaterial material = new PhongMaterial();

@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.SubScene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
@@ -105,6 +106,10 @@ public class Simple3D extends Application {
 
                 if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
                     sceneState.onMouseClick(event);
+                } else if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                    sceneState.onMousePressed(event);
+                } else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                    sceneState.onMouseReleased(event);
                 } else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                     sceneState.onMouseDrag(event, mouseXOld, mouseYOld, mouseXNew, mouseYNew);
                 } else if (event.getEventType() == MouseEvent.MOUSE_MOVED) {

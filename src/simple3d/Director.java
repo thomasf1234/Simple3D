@@ -32,7 +32,7 @@ public class Director {
         root.getChildren().addAll(nonEditGroup, editGroup);
 
         //create empty subscene
-        this.subScene = new SubScene(root, 800, 600, true, SceneAntialiasing.DISABLED);
+        this.subScene = new SimpleSubScene(root, 800, 600, true, SceneAntialiasing.DISABLED);
         subScene.setFill(Color.BLACK);
 
         for (int i = -10; i< 11; ++i) {
@@ -77,13 +77,6 @@ public class Director {
 
     public SubScene getSubScene() {
         return subScene;
-    }
-
-    public void add(Node node, float x, float y, float z) {
-        node.setTranslateX(x);
-        node.setTranslateY(y);
-        node.setTranslateZ(z);
-        editGroup.getChildren().add(node);
     }
 
     public void add(Node node) {

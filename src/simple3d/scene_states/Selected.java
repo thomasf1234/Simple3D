@@ -15,10 +15,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
-import simple3d.CameraMan;
-import simple3d.Director;
-import simple3d.SceneState;
-import simple3d.SimpleScene;
+import simple3d.*;
 import simple3d.io.MeshViewIO2;
 import simple3d.util.MeshUtils;
 
@@ -28,9 +25,9 @@ import java.io.File;
  * Created by tfisher on 07/03/2017.
  */
 public class Selected extends Default {
-    protected MeshView selectedMeshView;
+    protected SimpleMeshView selectedMeshView;
 
-    public Selected(SimpleScene simpleScene, Director director, MeshView selectedMeshView) {
+    public Selected(SimpleScene simpleScene, Director director, SimpleMeshView selectedMeshView) {
         super(simpleScene, director);
         this.selectedMeshView = selectedMeshView;
         openMeshDialog(selectedMeshView);
@@ -46,7 +43,7 @@ public class Selected extends Default {
                 cameraMan.faceTarget();
                 break;
             case F:
-                cameraMan.setTarget(selectedMeshView.getTranslateX(), selectedMeshView.getTranslateY(), selectedMeshView.getTranslateZ());
+                cameraMan.setTarget(selectedMeshView.getTranslate().getX(), selectedMeshView.getTranslate().getY(), selectedMeshView.getTranslate().getZ());
                 cameraMan.faceTarget();
                 break;
             case UP:
@@ -68,8 +65,8 @@ public class Selected extends Default {
                 cameraMan.removeTarget();
                 break;
             case K:
-                selectedMeshView.setRotationAxis(Rotate.Y_AXIS);
-                selectedMeshView.setRotate(10);
+                selectedMeshView.getyRotate().setAngle(40);
+                selectedMeshView.getxRotate().setAngle(70);
                 break;
             default:
                 break;
@@ -82,7 +79,7 @@ public class Selected extends Default {
 
         if (event.getButton() == MouseButton.SECONDARY) {
             if (selectedNode == selectedMeshView) {
-                MeshView selectedMeshView = (MeshView) selectedNode;
+                SimpleMeshView selectedMeshView = (SimpleMeshView) selectedNode;
                 ContextMenu contextMenu = getOnMeshViewRightClickContextMenu(selectedMeshView);
                 contextMenu.show(director.getSubScene(), event.getScreenX(), event.getScreenY());
             }
@@ -98,9 +95,9 @@ public class Selected extends Default {
         if (event.isControlDown()) {
             Point3D newRight = director.getCameraMan().getRight().multiply((mouseXNew - mouseXOld)/50);
             Point3D newUp = director.getCameraMan().getUp().multiply((- mouseYNew + mouseYOld)/50);
-            selectedMeshView.setTranslateX(selectedMeshView.getTranslateX() + newRight.getX() + newUp.getX());
-            selectedMeshView.setTranslateY(selectedMeshView.getTranslateY() + newRight.getY() + newUp.getY());
-            selectedMeshView.setTranslateZ(selectedMeshView.getTranslateZ() + newRight.getZ() + newUp.getZ());
+            selectedMeshView.getTranslate().setX(selectedMeshView.getTranslate().getX() + newRight.getX() + newUp.getX());
+            selectedMeshView.getTranslate().setY(selectedMeshView.getTranslate().getY() + newRight.getY() + newUp.getY());
+            selectedMeshView.getTranslate().setZ(selectedMeshView.getTranslate().getZ() + newRight.getZ() + newUp.getZ());
         }
     }
 

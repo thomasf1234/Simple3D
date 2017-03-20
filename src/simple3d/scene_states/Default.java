@@ -4,8 +4,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point3D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SubScene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -13,18 +15,20 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
+import javafx.scene.shape.*;
+import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
-import simple3d.CameraMan;
-import simple3d.Director;
-import simple3d.SceneState;
-import simple3d.SimpleScene;
+import simple3d.*;
+import simple3d.factories.LineFactory;
+import simple3d.factories.PlaneFactory;
 import simple3d.io.MeshViewIO2;
 import simple3d.util.MeshUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 /**
  * Created by tfisher on 07/03/2017.
@@ -43,6 +47,21 @@ public class Default extends SceneState {
 
         switch (event.getCode()) {
             case C:
+                cameraMan.setTarget(Point3D.ZERO);
+                cameraMan.faceTarget();
+                break;
+            case X:
+                cameraMan.setPosition(30, 0, 0);
+                cameraMan.setTarget(Point3D.ZERO);
+                cameraMan.faceTarget();
+                break;
+            case Y:
+                cameraMan.setPosition(0, 30, 0);
+                cameraMan.setTarget(Point3D.ZERO);
+                cameraMan.faceTarget();
+                break;
+            case Z:
+                cameraMan.setPosition(0, 0, 30);
                 cameraMan.setTarget(Point3D.ZERO);
                 cameraMan.faceTarget();
                 break;
@@ -76,12 +95,43 @@ public class Default extends SceneState {
         }
     }
 
+    @Override
+    public void onMousePressed(MouseEvent event) {
+        dragPath = new Path();
+        dragPath.setStroke(Color.PINK);
+        dragPath.setStrokeWidth(1);
+        dragPath.setFill(new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0.5));
+        dragPath.getElements().add(new MoveTo(event.getSceneX(), event.getSceneY()));
+        simpleScene.getPane().getChildren().add(dragPath);
+    }
+
+    @Override
+    public void onMouseReleased(MouseEvent event) {
+//        long t0 = System.nanoTime();
+//        final AtomicInteger count = new AtomicInteger(0);
+//        IntStream.range(0, (int) simpleScene.getWidth()).parallel().forEach(i -> {
+//            final int row = i;
+//            IntStream.range(0, (int) simpleScene.getHeight()).parallel().forEach(j -> {
+//                count.incrementAndGet();
+////                if (dragPath.contains(i, j)) {
+////                    count.incrementAndGet();
+////                    //System.out.println("contains x,y : " + i + "," + j);
+////                }
+//            });
+//        });
+//        long t1 = System.nanoTime();
+//        System.out.println("points : " + count.get() + ", t: " + (t1-t0)/1_000_000_000.0 + "s");
+
+        dragPath.getElements().clear();
+        simpleScene.getPane().getChildren().remove(dragPath);
+    }
+
     public void onMouseClick(MouseEvent event) {
         Node selectedNode = event.getPickResult().getIntersectedNode();
 
         if (event.getButton() == MouseButton.SECONDARY) {
             if (selectedNode != null && director.isSelectable(selectedNode)) {
-                MeshView selectedMeshView = (MeshView) selectedNode;
+                SimpleMeshView selectedMeshView = (SimpleMeshView) selectedNode;
                 ContextMenu contextMenu = getOnMeshViewRightClickContextMenu(selectedMeshView);
                 contextMenu.show(director.getSubScene(), event.getScreenX(), event.getScreenY());
             } else {
@@ -90,7 +140,7 @@ public class Default extends SceneState {
             }
         } else {
             if (selectedNode != null && director.isSelectable(selectedNode)) {
-                MeshView selectedMeshView = (MeshView) selectedNode;
+                SimpleMeshView selectedMeshView = (SimpleMeshView) selectedNode;
                 setNextSceneState(new Selected(simpleScene, director, selectedMeshView));
             }
         }
@@ -100,19 +150,33 @@ public class Default extends SceneState {
         director.getSubScene().requestFocus();
     }
 
+    private Path dragPath;
+
     public void onMouseDrag(MouseEvent event, double mouseXOld, double mouseYOld, double mouseXNew, double mouseYNew) {
         double dx = mouseXNew - mouseXOld;
         double dy = mouseYNew - mouseYOld;
 
-        if (event.isShiftDown()) {
-            CameraMan cameraMan = director.getCameraMan();
-            cameraMan.removeTarget();
-            cameraMan.moveRight(-dx/8);
-            cameraMan.moveUp(dy/8);
+//        if (event.isShiftDown()) {
+//            CameraMan cameraMan = director.getCameraMan();
+//            cameraMan.removeTarget();
+//            cameraMan.moveRight(-dx/8);
+//            cameraMan.moveUp(dy/8);
+//        } else {
+//            director.getCameraMan().xRotate.setAngle(director.getCameraMan().xRotate.getAngle() - dy / 5);
+//            director.getCameraMan().yRotate.setAngle(director.getCameraMan().yRotate.getAngle() + dx / 5);
+//        }
+
+        LineTo endTo = null;
+        if (dragPath.getElements().size() > 1) {
+            endTo = (LineTo) dragPath.getElements().get(dragPath.getElements().size() - 1);
+            dragPath.getElements().remove(endTo);
         } else {
-            director.getCameraMan().xRotate.setAngle(director.getCameraMan().xRotate.getAngle() - dy / 5);
-            director.getCameraMan().yRotate.setAngle(director.getCameraMan().yRotate.getAngle() + dx / 5);
+            MoveTo start = (MoveTo) dragPath.getElements().get(0);
+            endTo = new LineTo(start.getX(), start.getY());
         }
+
+        dragPath.getElements().addAll(new LineTo(event.getSceneX(), event.getSceneY()), endTo);
+
     }
 
 
@@ -120,25 +184,56 @@ public class Default extends SceneState {
         ContextMenu contextMenu = new ContextMenu();
         //Sub-Menu
         Menu addMenu = new Menu("Add");
+        MenuItem addLineMenuItem = new MenuItem("Line");
+        MenuItem addPlaneMenuItem = new MenuItem("Plane");
         MenuItem addCubeMenuItem = new MenuItem("Cube");
         MenuItem addSuzanneMenuItem = new MenuItem("Suzanne");
-        addMenu.getItems().addAll(addCubeMenuItem, addSuzanneMenuItem);
+        addMenu.getItems().addAll(addLineMenuItem, addPlaneMenuItem, addCubeMenuItem, addSuzanneMenuItem);
 
         MenuItem importMenuItem = new MenuItem("Import");
         contextMenu.getItems().addAll(addMenu, importMenuItem);
         contextMenu.setAutoHide(true);
+        addLineMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                SimpleMeshView line = null;
+
+                try {
+                    line = LineFactory.build(new Point3D(-1, -1, 0), new Point3D(1, -1, 0), Color.WHITE);
+                    line.getProperties().put("name", "Line001");
+                    director.add(line);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        addPlaneMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                SimpleMeshView plane = null;
+
+                try {
+                    plane = PlaneFactory.build(1, Color.GRAY);
+                    plane.getProperties().put("name", "Plane001");
+                    director.add(plane);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+
         addCubeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                MeshView cubeMeshView = null;
+                SimpleMeshView cubeMeshView = null;
 
                 try {
                     cubeMeshView = MeshViewIO2.read(new File("src/simple3d/resources/Cube.bin"));
-                    //cubeMeshView.setScaleX(5.0);
-                    //cubeMeshView.setScaleY(5.0);
-                    //cubeMeshView.setScaleZ(5.0);
                     cubeMeshView.getProperties().put("name", "Cube001");
-                    director.add(cubeMeshView, (float) 0.0, (float) 0.0, (float) 0.0);
+                    director.add(cubeMeshView);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     e.printStackTrace();
@@ -149,15 +244,19 @@ public class Default extends SceneState {
         addSuzanneMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                MeshView suzanneMeshView = null;
+                SimpleMeshView suzanneMeshView = null;
 
                 try {
                     suzanneMeshView = MeshViewIO2.read(new File("src/simple3d/resources/Suzanne.bin"));
-//                    suzanneMeshView.setScaleX(5.0);
-//                    suzanneMeshView.setScaleY(5.0);
-//                    suzanneMeshView.setScaleZ(5.0);
+//                    suzanneMeshView.getScale().setX(2.0);
+//                    suzanneMeshView.getScale().setY(2.0);
+//                    suzanneMeshView.getScale().setZ(2.0);
+                    suzanneMeshView.getTranslate().setX(0);
+                    suzanneMeshView.getTranslate().setY(0);
+                    suzanneMeshView.getTranslate().setZ(0);
+
                     suzanneMeshView.getProperties().put("name", "Suzanne001");
-                    director.add(suzanneMeshView, (float) 0.0, (float) 0.0, (float) 0.0);
+                    director.add(suzanneMeshView);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     e.printStackTrace();
@@ -168,7 +267,7 @@ public class Default extends SceneState {
         importMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                MeshView meshView = null;
+                SimpleMeshView meshView = null;
 
                 try {
                     FileChooser fileChooser = new FileChooser();
@@ -189,7 +288,7 @@ public class Default extends SceneState {
                     meshView.setScaleX(5.0);
                     meshView.setScaleY(5.0);
                     meshView.setScaleZ(5.0);
-                    director.add(meshView, (float) 0.0, (float) 0.0, (float) 0.0);
+                    director.add(meshView);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     e.printStackTrace();
@@ -202,7 +301,7 @@ public class Default extends SceneState {
         return contextMenu;
     }
 
-    protected ContextMenu getOnMeshViewRightClickContextMenu(MeshView selectedMeshView) {
+    protected ContextMenu getOnMeshViewRightClickContextMenu(SimpleMeshView selectedMeshView) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem editMenuItem = new MenuItem("Edit");
         MenuItem exportMenuItem = new MenuItem("Export");
@@ -215,23 +314,6 @@ public class Default extends SceneState {
             public void handle(ActionEvent event) {
                 try {
                     setNextSceneState(new EditMesh(simpleScene, director, selectedMeshView));
-//                    Point3D[] vertices = MeshUtils.getVertices(selectedMeshView);
-//
-//
-//                    for (Point3D vertex : vertices) {
-//                        Sphere point = new Sphere(0.05);
-//                        point.setMaterial(new PhongMaterial(Color.RED));
-//                        //Director add group to hold Selected Mesh, this is a copy of the original that we can edit, we also temp hide the original. (a hidden group perhaps)
-//                        selectedMeshView.setDrawMode(DrawMode.LINE);
-//                        point.getTransforms().addAll(selectedMeshView.getTransforms());
-//                        point.setTranslateX(vertex.getX() * selectedMeshView.getScaleX());
-//                        point.setTranslateY(vertex.getY() * selectedMeshView.getScaleY());
-//                        point.setTranslateZ(vertex.getZ() * selectedMeshView.getScaleZ());
-//                        point.setRotationAxis(selectedMeshView.getRotationAxis());
-//                        point.setRotate(selectedMeshView.getRotate());
-//
-//                        director.add(point);
-//                    }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     e.printStackTrace();

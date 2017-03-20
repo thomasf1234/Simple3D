@@ -19,6 +19,8 @@ public abstract class SceneState {
 
     public abstract void onKeyPressed(KeyEvent event);
     public abstract void onScroll(ScrollEvent event);
+    public abstract void onMousePressed(MouseEvent event);
+    public abstract void onMouseReleased(MouseEvent event);
     public abstract void onMouseClick(MouseEvent event);
     public abstract void onMouseMove(MouseEvent event);
     public abstract void onMouseDrag(MouseEvent event, double mouseXOld, double mouseYOld, double mouseXNew, double mouseYNew);
