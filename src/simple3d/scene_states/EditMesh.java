@@ -12,12 +12,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.TriangleMesh;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import simple3d.*;
+import simple3d.scene_states.edit_mesh.PathRegionNodeSelect;
 import simple3d.util.MeshUtils;
 
 import java.util.ArrayList;
@@ -34,8 +33,8 @@ public class EditMesh extends Selected {
     public static Color COLOR_SELECTED = Color.YELLOW;
     private List<SimpleVertex> points;
     private List<SimpleVertex> selectedPoints;
-    private Rectangle boxSelect;
-    private Map<Integer, HashMap<Integer, Node>> tmpPoints;
+    private Path path;
+    private PathRegionNodeSelect pathRegionNodeSelect;
 
     public EditMesh(SimpleScene simpleScene, Director director, SimpleMeshView selectedMeshView) {
         super(simpleScene, director, selectedMeshView);
@@ -68,17 +67,16 @@ public class EditMesh extends Selected {
 
     @Override
     public void onMousePressed(MouseEvent event) {
-        System.out.println("Mouse Pressed");
-        boxSelect = new Rectangle();
-        boxSelect.setTranslateX(event.getSceneX());
-        boxSelect.setTranslateY(event.getSceneY());
-        boxSelect.setFill(new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0.5));
-        boxSelect.setStroke(Color.CYAN);
-        boxSelect.setStrokeWidth(1);
-        boxSelect.setDisable(true);
+        path = new Path();
+        path.setStrokeWidth(2);
+        path.getElements().add(new MoveTo(event.getSceneX(), event.getSceneY()));
+        path.setFill(new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0.5));
+        path.setStroke(Color.CYAN);
+        path.setDisable(true);
         SimpleScene simpleScene = (SimpleScene) director.getSubScene().getScene();
-        simpleScene.getPane().getChildren().add(boxSelect);
-        tmpPoints = new HashMap<Integer, HashMap<Integer, Node>>();
+        simpleScene.getPane().getChildren().add(path);
+        pathRegionNodeSelect = new PathRegionNodeSelect((int) simpleScene.getWidth(), (int) simpleScene.getHeight(), (int) event.getSceneX(), (int) event.getSceneY(), (SimpleSubScene) director.getSubScene());
+        pathRegionNodeSelect.prepare();
     }
 
     //L-Click and drag to select
@@ -86,8 +84,6 @@ public class EditMesh extends Selected {
     //R-Click and drag to deselect
     @Override
     public void onMouseReleased(MouseEvent event) {
-        System.out.println("Mouse Released");
-
         if (!event.isShiftDown()) {
             selectedPoints.forEach(point -> {
                 PhongMaterial material = (PhongMaterial) point.getMaterial();
@@ -96,85 +92,41 @@ public class EditMesh extends Selected {
             selectedPoints.clear();
         }
 
-        SimpleSubScene simpleSubScene = (SimpleSubScene) director.getSubScene();
-        long t0 = System.currentTimeMillis();
-        int sceneX = (int) boxSelect.getTranslateX();
-        int sceneY = (int) boxSelect.getTranslateY();
-
-        //Parallel version
-//        IntStream.range(sceneX, (int) event.getSceneX()).parallel().forEach(i -> {
-//            final int row = i;
-//            IntStream.range(sceneY, (int) event.getSceneY()).parallel().forEach(j -> {
-//                Node selectedNode = simpleSubScene.getPick(row, j);
-//                if (selectedNode instanceof SimpleVertex) {
-//                    SimpleVertex point = (SimpleVertex) selectedNode;
-//                    PhongMaterial material = (PhongMaterial) point.getMaterial();
-//                    if (event.getButton() == MouseButton.SECONDARY) {
-//                        if (selectedPoints.contains(point)) {
-//                            material.setDiffuseColor(COLOR_NOT_SELECTED);
-//                            selectedPoints.remove(point);
-//                        }
-//                    } else {
-//                        material.setDiffuseColor(COLOR_SELECTED);
-//                        selectedPoints.add(point);
-//                    }
-//                }
-//            });
-//        });
-
-        //Parallel version
-        int x = (int) ((event.getSceneX() - sceneX) / 2.0);
-        IntStream.range(0, x).parallel().forEach(i -> {
-            int xIndex = i * 2;
-            if (tmpPoints.get(xIndex) == null) {
-                tmpPoints.put(xIndex, new HashMap<Integer, Node>());
-            }
-            final int row = xIndex;
-            int y = (int) ((event.getSceneY() - sceneY) / 2.0);
-            IntStream.range(0, y).parallel().forEach(j -> {
-                int yIndex = j*2;
-                if (!tmpPoints.get(row).containsKey(yIndex)) {
-                    tmpPoints.get(row).put(yIndex, simpleSubScene.getPick(row + xIndex, yIndex + sceneY));
-                }
-
-                Node selectedNode = tmpPoints.get(row).get(yIndex);
-                if (selectedNode instanceof SimpleVertex) {
-                    SimpleVertex point = (SimpleVertex) selectedNode;
-                    PhongMaterial material = (PhongMaterial) point.getMaterial();
-                    if (event.getButton() == MouseButton.SECONDARY) {
-                        if (selectedPoints.contains(point)) {
-                            material.setDiffuseColor(COLOR_NOT_SELECTED);
-                            selectedPoints.remove(point);
-                        }
-                    } else {
-                        material.setDiffuseColor(COLOR_SELECTED);
-                        selectedPoints.add(point);
+        for (Node selectedNode : pathRegionNodeSelect.getSelectedNodes()) {
+            if (selectedNode instanceof SimpleVertex) {
+                SimpleVertex point = (SimpleVertex) selectedNode;
+                PhongMaterial material = (PhongMaterial) point.getMaterial();
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    if (selectedPoints.contains(point)) {
+                        material.setDiffuseColor(COLOR_NOT_SELECTED);
+                        selectedPoints.remove(point);
                     }
+                } else {
+                    material.setDiffuseColor(COLOR_SELECTED);
+                    selectedPoints.add(point);
                 }
-            });
-        });
+            }
+        }
 
-        long t1 = System.currentTimeMillis();
-        System.out.println("t: " + (t1-t0)/1000.0 + "s");
-        simpleScene.getPane().getChildren().remove(boxSelect);
+        simpleScene.getPane().getChildren().remove(path);
     }
 
     @Override
     public void onMouseClick(MouseEvent event) {
-        Node selectedNode = event.getPickResult().getIntersectedNode();
-
-        if (event.getButton() == MouseButton.SECONDARY) {
-            getOnMeshViewRightClickContextMenu().show(director.getSubScene().getScene().getWindow());
-        } else {
-            for (SimpleVertex point : points) {
-                if (selectedNode == point) {
-                    PhongMaterial material = (PhongMaterial) point.getMaterial();
-                    material.setDiffuseColor(COLOR_SELECTED);
-                    selectedPoints.add(point);
-                    return;
-                }
-            }
-        }
+//        Node selectedNode = event.getPickResult().getIntersectedNode();
+//
+//        if (event.getButton() == MouseButton.SECONDARY) {
+//            getOnMeshViewRightClickContextMenu().show(director.getSubScene().getScene().getWindow());
+//        } else {
+//            for (SimpleVertex point : points) {
+//                if (selectedNode == point) {
+//                    PhongMaterial material = (PhongMaterial) point.getMaterial();
+//                    material.setDiffuseColor(COLOR_SELECTED);
+//                    selectedPoints.add(point);
+//                    return;
+//                }
+//            }
+//        }
 
 //        if (selectedNode != selectedMeshView) {
 //            for (Shape3D point : points) {
@@ -186,32 +138,18 @@ public class EditMesh extends Selected {
 
     @Override
     public void onMouseDrag(MouseEvent event, double mouseXOld, double mouseYOld, double mouseXNew, double mouseYNew) {
-        //System.out.println("Mouse Dragged");
-        //must add box select
-        boxSelect.setWidth(mouseXNew - boxSelect.getTranslateX());
-        boxSelect.setHeight(mouseYNew - boxSelect.getTranslateY());
+        LineTo endTo = null;
+        if (path.getElements().size() > 1) {
+            endTo = (LineTo) path.getElements().get(path.getElements().size() - 1);
+            path.getElements().remove(endTo);
+        } else {
+            MoveTo start = (MoveTo) path.getElements().get(0);
+            endTo = new LineTo(start.getX(), start.getY());
+        }
 
-        //***********************************************
-        SimpleSubScene simpleSubScene = (SimpleSubScene) director.getSubScene();
-        int sceneX = (int) boxSelect.getTranslateX();
-        int sceneY = (int) boxSelect.getTranslateY();
+        path.getElements().addAll(new LineTo(event.getSceneX(), event.getSceneY()), endTo);
+        pathRegionNodeSelect.update((int) mouseXNew, (int) mouseYNew);
 
-        //Parallel version
-        int x = (int) ((event.getSceneX() - sceneX) / 2.0);
-        IntStream.range(0, x).parallel().forEach(i -> {
-            int xIndex = i * 2;
-            if (tmpPoints.get(xIndex) == null) {
-                tmpPoints.put(xIndex, new HashMap<Integer, Node>());
-            }
-            final int row = xIndex;
-            int y = (int) ((event.getSceneY() - sceneY) / 2.0);
-            IntStream.range(0, y).parallel().forEach(j -> {
-                int yIndex = j*2;
-                if (!tmpPoints.get(row).containsKey(yIndex)) {
-                    tmpPoints.get(row).put(yIndex, simpleSubScene.getPick(row + sceneX, yIndex + sceneY));
-                }
-            });
-        });
         //***********************************************
 
         if (event.isControlDown()) {

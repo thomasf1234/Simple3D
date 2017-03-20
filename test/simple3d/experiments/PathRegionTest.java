@@ -1,6 +1,6 @@
 package simple3d.experiments;
 
-import experiments.floodfill.PathRegion;
+import experiments.pathregion.PathRegion;
 import javafx.geometry.Point2D;
 import org.junit.jupiter.api.Test;
 

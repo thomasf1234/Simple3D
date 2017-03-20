@@ -1,7 +1,6 @@
-package experiments.floodfill;
+package experiments.pathregion;
 
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Path;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,33 +10,29 @@ import java.util.List;
  * Created by tfisher on 15/03/2017.
  */
 public class PathRegion {
-    private int[][] index;
-    private int NO_INDEX = -1;
-    private List<Point2D> region;
-    private Point2D start;
-    private Point2D prev;
+    protected int[][] index;
+    protected int NO_INDEX = 0;
+    protected List<Point2D> region;
+    protected Point2D start;
+    protected Point2D prev;
 
     public PathRegion(int width, int height, int x0, int y0) {
         this.index = new int[width][height];
-        for (int i=0; i<width; ++i) {
-            for (int j=0; j<height; ++j) {
-                index[i][j] = NO_INDEX;
-            }
-        }
-
-        region = new ArrayList<Point2D>();
-        start = new Point2D(x0, y0);
-        updateRegion(x0, y0);
+        this.region = new ArrayList<Point2D>();
+        this.start = new Point2D(x0, y0);
     }
 
-    public synchronized void updateRegion(int newX, int newY) {
+    //must be called before any updates
+    public void prepare() {
+        update((int) start.getX(), (int) start.getY());
+    }
+
+    public synchronized void update(int newX, int newY) {
         Point2D curr = new Point2D(newX, newY);
-        int regionIndex = region.size();
-        index[newX][newY] = regionIndex;
-        region.add(curr);
+        updateRegionAndIndex(newX, newY);
 
         //if we have at least 3 points
-        if (regionIndex > 1) {
+        if (region.size() > 1) {
             Point2D[] p = new Point2D[3];
             sortX(start, prev, curr, p);
 
@@ -55,66 +50,87 @@ public class PathRegion {
             double k2 = y2 - (m2 * x2);
             double k3 = y3 - (m3 * x3);
 
-            if (y2 < y3) {
+            double y_x2 = Math.ceil((m1 * x2) + k1);
+            if (y2 < y_x2) {
                 //case 1 middle point is lower than L1
                 for (int x = (int) x1; x < (int) x2; ++x) {
-                    double yMin = Math.floor((m2 * x) + k2);
-                    double yMax = Math.ceil((m1 * x) + k1);
+                    double yMin = ((m2 * x) + k2);
+                    double yMax = ((m1 * x) + k1);
 
                     for (int y = (int) yMin; y < (int) yMax; ++y) {
-                        Point2D pN = new Point2D(x, -y);
-                        int regionIndexN = region.size();
-                        index[x][-y] = regionIndexN;
-                        region.add(pN);
+                        updateRegionAndIndex(x, -y);
                     }
                 }
 
                 for (int x = (int) x2; x < (int) x3; ++x) {
-                    double yMin = Math.floor((m3 * x) + k3);
-                    double yMax = Math.ceil((m1 * x) + k1);
+                    double yMin = ((m3 * x) + k3);
+                    double yMax = ((m1 * x) + k1);
 
                     for (int y = (int) yMin; y < (int) yMax; ++y) {
-                        Point2D pN = new Point2D(x, -y);
-                        int regionIndexN = region.size();
-                        index[x][-y] = regionIndexN;
-                        region.add(pN);
+                        updateRegionAndIndex(x, -y);
                     }
                 }
             } else {
                 //case 2 middle point is above than L1
                 for (int x = (int) x1; x < (int) x2; ++x) {
-                    double yMin = Math.floor((m1 * x) + k1);
-                    double yMax = Math.ceil((m2 * x) + k2);
+                    double yMin = ((m1 * x) + k1);
+                    double yMax = ((m2 * x) + k2);
 
                     for (int y = (int) yMin; y < (int) yMax; ++y) {
-                        Point2D pN = new Point2D(x, -y);
-                        int regionIndexN = region.size();
-                        index[x][-y] = regionIndexN;
-                        region.add(pN);
+                        updateRegionAndIndex(x, -y);
                     }
                 }
 
                 for (int x = (int) x2; x < (int) x3; ++x) {
-                    double yMin = Math.floor((m1 * x) + k1);
-                    double yMax = Math.ceil((m3 * x) + k3);
+                    double yMin = ((m1 * x) + k1);
+                    double yMax = ((m3 * x) + k3);
 
                     for (int y = (int) yMin; y < (int) yMax; ++y) {
-                        Point2D pN = new Point2D(x, -y);
-                        int regionIndexN = region.size();
-                        index[x][-y] = regionIndexN;
-                        region.add(pN);
+                        updateRegionAndIndex(x, -y);
                     }
                 }
             }
         }
 
         //update previous values
-        prev = new Point2D(newX, newY);
+        prev = curr;
     }
 
+    //negative indexes indicate removed point
+    protected void updateRegionAndIndex(int x, int y) {
+        int currentIndex = index[x][y];
+
+        if (currentIndex == NO_INDEX) {
+            Point2D pN = new Point2D(x, y);
+            int regionIndex = region.size();
+            region.add(pN);
+            index[x][y] = regionIndex + 1;
+            onAdd(pN);
+        } else {
+            if (currentIndex < 0) {
+                int regionIndex = (currentIndex * -1) - 1;
+                Point2D pN = new Point2D(x, y);
+                region.set(regionIndex, pN);
+                onAdd(pN);
+                index[x][y] = currentIndex * -1;
+            } else {
+                int regionIndex = currentIndex - 1;
+                Point2D pN = region.get(regionIndex);
+                onRemove(pN);
+                region.set(regionIndex, null);
+                index[x][y] = currentIndex * -1;
+            }
+        }
+    }
+
+    public void onAdd(Point2D point) {
+    }
+
+    public void onRemove(Point2D point) {
+    }
 
     public boolean hasPoint(int x, int y) {
-        return index[x][y] != -1;
+        return index[x][y] != 0;
     }
 
     public Point2D getPoint(int x, int y) {

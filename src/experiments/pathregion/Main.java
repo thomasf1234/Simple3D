@@ -1,25 +1,21 @@
-package experiments.floodfill;
+package experiments.pathregion;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.stage.Stage;
-import simple3d.SimpleScene;
 
 /**
  * Created by tfisher on 15/03/2017.
  */
-public class FloodFill extends Application {
+public class Main extends Application {
     private Scene scene;
     private double mouseXOld = 0;
     private double mouseYOld = 0;
@@ -59,7 +55,6 @@ public class FloodFill extends Application {
                 } else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
                     onMouseReleased(event);
                 } else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                    System.out.println("x,y : " + mouseXNew + ", " + mouseYNew );
                     onMouseDrag(event, mouseXOld, mouseYOld, mouseXNew, mouseYNew);
                 }
 
@@ -76,11 +71,12 @@ public class FloodFill extends Application {
     private void onMousePressed(MouseEvent event) {
         path = new Path();
         path.setStroke(Color.DARKBLUE);
-        path.setStrokeWidth(1);
+        path.setStrokeWidth(2);
         //path.setFill(new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(), Color.BLUE.getBlue(), 0.5));
         path.getElements().add(new MoveTo(event.getSceneX(), event.getSceneY()));
         root.getChildren().add(path);
-        pathRegion = new PathRegion((int) scene.getWidth(), (int) scene.getHeight(), (int) event.getSceneX(), (int) event.getSceneY());
+        pathRegion = new PathRegionTest((int) scene.getWidth(), (int) scene.getHeight(), (int) event.getSceneX(), (int) event.getSceneY(), canvas.getGraphicsContext2D());
+        pathRegion.prepare();
     }
 
     private void onMouseReleased(MouseEvent event) {
@@ -99,11 +95,6 @@ public class FloodFill extends Application {
         }
 
         path.getElements().addAll(new LineTo(event.getSceneX(), event.getSceneY()), endTo);
-        pathRegion.updateRegion((int) event.getSceneX(), (int) event.getSceneY());
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        for (Point2D point : pathRegion.getRegion()) {
-            gc.getPixelWriter().setColor((int) point.getX(), (int) point.getY(), Color.RED);
-        }
+        pathRegion.update((int) event.getSceneX(), (int) event.getSceneY());
     }
 }
