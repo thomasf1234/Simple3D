@@ -28,9 +28,13 @@ public class CameraMan {
         this.scene = scene;
         this.xRotate = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
         this.yRotate = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
+        setDefaultTarget();
+        initializeCamera();
+    }
+
+    public void setDefaultTarget() {
         //default target is at infinity along Z to simulate no target
         this.target = Rotate.Z_AXIS.multiply(NEAR_INFINITY);
-        initializeCamera();
     }
 
     public void setTarget(Point3D target) {
@@ -99,6 +103,10 @@ public class CameraMan {
         return this.target.subtract(getPosition()).normalize();
     }
 
+    public Point3D getBackward() {
+        return getForward().multiply(-1);
+    }
+
     public Point3D getRight() {
         Point3D forward = getForward();
         return Rotate.Y_AXIS.crossProduct(forward.getX(), 0, forward.getZ()).normalize();
@@ -109,7 +117,15 @@ public class CameraMan {
     }
 
     public void moveRight(double value) {
-        setPosition(getPosition().add(getRight().multiply(value)));
+        double r = getTargetDistance();
+        double theta = value/r;
+        Point3D targetPosition = new Point3D(target.getX(), target.getY(), target.getZ());
+        Point3D newPosition = targetPosition.add(getBackward().multiply(r * Math.cos(theta)).add(getRight().multiply(r * Math.sin(theta))));
+
+        double newX = newPosition.getX();
+        double newY = getY();
+        double newZ = newPosition.getZ();
+        setPosition(newX, newY, newZ);
         this.xRotate.setAxis(getRight());
         faceTarget();
     }
@@ -117,16 +133,25 @@ public class CameraMan {
     public void moveUp(double value) {
         //upper and lower bounds for up/down
         if ((value > 0 && this.xRotate.getAngle() > -UPPER_ROTATE_BOUND) || (value < 0 && this.xRotate.getAngle() < UPPER_ROTATE_BOUND)) {
-            setPosition(getPosition().add(getUp().multiply(value)));
+            double r = getTargetDistance();
+            double theta = value/r;
+            Point3D targetPosition = new Point3D(target.getX(), target.getY(), target.getZ());
+            Point3D newPosition = targetPosition.add(getBackward().multiply(r * Math.cos(theta)).add(getUp().multiply(r * Math.sin(theta))));
+
+            double newX = newPosition.getX();
+            double newY = newPosition.getY();
+            double newZ = newPosition.getZ();
+            setPosition(newX, newY, newZ);
             faceTarget();
         }
     }
 
     public void reset() {
-        this.setPosition(Point3D.ZERO);
+        setPosition(Point3D.ZERO);
         this.xRotate.setAxis(Rotate.X_AXIS);
         this.xRotate.setAngle(0);
         this.yRotate.setAngle(0);
+        setDefaultTarget();
     }
 
     public void initializeCamera() {

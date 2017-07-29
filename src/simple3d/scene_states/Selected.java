@@ -47,16 +47,16 @@ public class Selected extends Default {
                 cameraMan.faceTarget();
                 break;
             case UP:
-                cameraMan.moveUp(3);
+                cameraMan.moveUp(1);
                 break;
             case DOWN:
-                cameraMan.moveUp(-3);
+                cameraMan.moveUp(-1);
                 break;
             case LEFT:
-                cameraMan.moveRight(-3);
+                cameraMan.moveRight(-1);
                 break;
             case RIGHT:
-                cameraMan.moveRight(3);
+                cameraMan.moveRight(1);
                 break;
             case O:
                 cameraMan.reset();

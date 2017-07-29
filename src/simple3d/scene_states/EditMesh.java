@@ -48,17 +48,17 @@ public class EditMesh extends Selected {
             point.setMaterial(new PhongMaterial(COLOR_NOT_SELECTED));
             //must make scale, translate and rotation transforms on Mesh such that they can all be applied to the point
             //Director add group to hold Selected Mesh, this is a copy of the original that we can edit, we also temp hide the original. (a hidden group perhaps)
-            double x = vertex.getX() * selectedMeshView.getScale().getX();
-            double y = vertex.getY() * selectedMeshView.getScale().getY();
-            double z = vertex.getZ() * selectedMeshView.getScale().getZ();
+//            double x = vertex.getX() * selectedMeshView.getScale().getX();
+//            double y = vertex.getY() * selectedMeshView.getScale().getY();
+//            double z = vertex.getZ() * selectedMeshView.getScale().getZ();
 
-            Translate baseTranslate = new Translate(x, y, z);
-            Rotate xRotate = new Rotate(selectedMeshView.getxRotate().getAngle(), -x, -y, -z, Rotate.X_AXIS);
-            Rotate yRotate = new Rotate(selectedMeshView.getyRotate().getAngle(), -x, -y, -z, Rotate.Y_AXIS);
-            point.getTranslate().setX(x);
-            point.getTranslate().setY(y);
-            point.getTranslate().setZ(z);
-            point.getTransforms().addAll(selectedMeshView.getTranslate().clone(), xRotate, yRotate);
+            point.setScale(selectedMeshView.getScale().getX(), selectedMeshView.getScale().getY(), selectedMeshView.getScale().getZ());
+            point.setBaseTranslate(vertex.getX(), vertex.getY(), vertex.getZ());
+            point.rotate(selectedMeshView.getxRotate().getAngle(), selectedMeshView.getyRotate().getAngle());
+
+            point.getTranslate().setX(selectedMeshView.getTranslate().getX());
+            point.getTranslate().setY(selectedMeshView.getTranslate().getY());
+            point.getTranslate().setZ(selectedMeshView.getTranslate().getZ());
 
             points.add(point);
             director.add(point);
@@ -113,27 +113,20 @@ public class EditMesh extends Selected {
 
     @Override
     public void onMouseClick(MouseEvent event) {
-//        Node selectedNode = event.getPickResult().getIntersectedNode();
-//
-//        if (event.getButton() == MouseButton.SECONDARY) {
-//            getOnMeshViewRightClickContextMenu().show(director.getSubScene().getScene().getWindow());
-//        } else {
-//            for (SimpleVertex point : points) {
-//                if (selectedNode == point) {
-//                    PhongMaterial material = (PhongMaterial) point.getMaterial();
-//                    material.setDiffuseColor(COLOR_SELECTED);
-//                    selectedPoints.add(point);
-//                    return;
-//                }
-//            }
-//        }
+        Node selectedNode = event.getPickResult().getIntersectedNode();
 
-//        if (selectedNode != selectedMeshView) {
-//            for (Shape3D point : points) {
-//                director.remove(point);
-//            }
-//            setNextSceneState(new Default(simpleScene, director));
-//        }
+        if (event.getButton() == MouseButton.SECONDARY) {
+            getOnMeshViewRightClickContextMenu().show(director.getSubScene().getScene().getWindow(), event.getScreenX(), event.getScreenY());
+        } else {
+            for (SimpleVertex point : points) {
+                if (selectedNode == point) {
+                    PhongMaterial material = (PhongMaterial) point.getMaterial();
+                    material.setDiffuseColor(COLOR_SELECTED);
+                    selectedPoints.add(point);
+                    return;
+                }
+            }
+        }
     }
 
     @Override
@@ -185,16 +178,16 @@ public class EditMesh extends Selected {
                 cameraMan.faceTarget();
                 break;
             case UP:
-                cameraMan.moveUp(3);
+                cameraMan.moveUp(1);
                 break;
             case DOWN:
-                cameraMan.moveUp(-3);
+                cameraMan.moveUp(-1);
                 break;
             case LEFT:
-                cameraMan.moveRight(-3);
+                cameraMan.moveRight(-1);
                 break;
             case RIGHT:
-                cameraMan.moveRight(3);
+                cameraMan.moveRight(1);
                 break;
             case O:
                 cameraMan.reset();
