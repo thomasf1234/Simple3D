@@ -34,11 +34,11 @@ public class CameraMan {
 
     public void setDefaultTarget() {
         //default target is at infinity along Z to simulate no target
-        this.target = Rotate.Z_AXIS.multiply(NEAR_INFINITY);
+        setTarget(Rotate.Z_AXIS.multiply(NEAR_INFINITY));
     }
 
     public void setTarget(Point3D target) {
-        this.target = target;
+        setTarget(target.getX(), target.getY(), target.getZ());
     }
 
     public void setTarget(double x, double y, double z) {
@@ -56,9 +56,9 @@ public class CameraMan {
         double yRotation = Math.toDegrees(Math.atan2(forward.getX(), forward.getZ()));
 
         //must set xRotate axis for the correct rotation to follow
-        this.xRotate.setAxis(getRight());
-        this.xRotate.setAngle(xRotation);
-        this.yRotate.setAngle(yRotation);
+        xRotate.setAxis(getRight());
+        xRotate.setAngle(xRotation);
+        yRotate.setAngle(yRotation);
     }
 
     public double getTargetDistance() {
@@ -66,7 +66,7 @@ public class CameraMan {
     }
 
     public Point3D getPosition() {
-        return new Point3D(this.x, this.y, this.z);
+        return new Point3D(getX(), getY(), getZ());
     }
 
     public double getX() { return x; }
@@ -88,9 +88,9 @@ public class CameraMan {
     }
 
     private void setCameraPosition() {
-        this.camera.setTranslateX(this.x);
-        this.camera.setTranslateY(this.y);
-        this.camera.setTranslateZ(this.z);
+        camera.setTranslateX(this.x);
+        camera.setTranslateY(this.y);
+        camera.setTranslateZ(this.z);
     }
 
     public void moveForward(double value) {
@@ -154,16 +154,18 @@ public class CameraMan {
         setDefaultTarget();
     }
 
-    public void initializeCamera() {
-        this.camera = new PerspectiveCamera(true);
-        this.camera.setNearClip(0.01);
-        this.camera.setFarClip(100000.0);
-        this.camera.getTransforms().addAll(this.xRotate, this.yRotate);
-        this.scene.setCamera(this.camera);
-        setCameraPosition();
+    private void initializeCamera() {
+        if (camera == null) {
+            this.camera = new PerspectiveCamera(true);
+            camera.setNearClip(0.01);
+            camera.setFarClip(100000.0);
+            camera.getTransforms().addAll(xRotate, yRotate);
+            scene.setCamera(camera);
+            setCameraPosition();
+        }
     }
 
     public WritableImage render() {
-        return this.scene.snapshot(null, null);
+        return scene.snapshot(null, null);
     }
 }
