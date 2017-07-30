@@ -5,12 +5,13 @@ import javafx.geometry.Point3D;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
+import simple3d.SimpleMeshView;
 
 /**
  * Created by tfisher on 05/03/2017.
  */
 public class PointFactory {
-    public static MeshView build(Point3D p0, Color color) {
+    public static SimpleMeshView build(Point3D p0, Color color) {
         TriangleMesh pointMesh = new TriangleMesh();
         ObservableFloatArray points = pointMesh.getPoints();
         ObservableFaceArray faces = pointMesh.getFaces();
@@ -24,7 +25,7 @@ public class PointFactory {
 
         faces.addAll(0,0, 1,0, 2,0);
 
-        MeshView pointMeshView = new MeshView(pointMesh);
+        SimpleMeshView pointMeshView = new SimpleMeshView(pointMesh);
         pointMeshView.setDrawMode(DrawMode.LINE);
         pointMeshView.setCullFace(CullFace.NONE);
         PhongMaterial material = new PhongMaterial(color);

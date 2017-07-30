@@ -1,11 +1,17 @@
 package simple3d;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Point3D;
 import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.SubScene;
 import javafx.scene.image.WritableImage;
 import javafx.scene.transform.Rotate;
+
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 
 /**
  *
@@ -164,8 +170,17 @@ public class CameraMan {
             setCameraPosition();
         }
     }
-
-    public WritableImage render() {
-        return scene.snapshot(null, null);
-    }
+//Doesn't work
+//    public void render() {
+//        WritableImage image = scene.snapshot(new SnapshotParameters(), null);
+//
+//        // TODO: probably use a file chooser here
+//        File file = new File("snapshot.png");
+//
+//        try {
+//            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+//        } catch (IOException e) {
+//            // TODO: handle exception here
+//        }
+//    }
 }

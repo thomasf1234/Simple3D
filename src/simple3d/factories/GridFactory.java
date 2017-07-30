@@ -3,13 +3,14 @@ package simple3d.factories;
 import javafx.collections.ObservableFloatArray;
 import javafx.geometry.Point3D;
 import javafx.scene.shape.*;
+import simple3d.SimpleMeshView;
 
 /**
  * Created by tfisher on 05/03/2017.
  */
 public class GridFactory {
     //scale = width/height of individual square, horizCount = horizontal square count
-    public static MeshView build(float scale, int horizCount) {
+    public static SimpleMeshView build(float scale, int horizCount) {
         TriangleMesh grid = new TriangleMesh();
         ObservableFloatArray points = grid.getPoints();
         ObservableFaceArray faces = grid.getFaces();
@@ -39,7 +40,7 @@ public class GridFactory {
             );
         }
 
-        MeshView gridMeshView = new MeshView(grid);
+        SimpleMeshView gridMeshView = new SimpleMeshView(grid);
         gridMeshView.setDrawMode(DrawMode.LINE);
         gridMeshView.setCullFace(CullFace.NONE);
 

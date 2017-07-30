@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
+import simple3d.factories.CoordSystemFactory;
 import simple3d.factories.GridFactory;
 import simple3d.factories.LineFactory;
 import simple3d.factories.PointFactory;
@@ -28,6 +29,8 @@ public class Director {
     public Director() {
         this.root = new Group();
         this.editGroup = new Group();
+
+        //nonEditGroup for nodes that cannot be altered such as the grid
         this.nonEditGroup = new Group();
         root.getChildren().addAll(nonEditGroup, editGroup);
 
@@ -35,18 +38,9 @@ public class Director {
         this.subScene = new SimpleSubScene(root, 800, 600, true, SceneAntialiasing.DISABLED);
         subScene.setFill(Color.BLACK);
 
-        for (int i = -10; i< 11; ++i) {
-            if (i != 0) {
-                nonEditGroup.getChildren().add(LineFactory.build(new Point3D(-10, 0, 1*i), new Point3D(10, 0, 1*i), Color.GRAY));
-                nonEditGroup.getChildren().add(LineFactory.build(new Point3D(1*i, 0, -10), new Point3D(1*i, 0, 10), Color.GRAY));
-            }
-        }
+        SimpleMeshView coordAxisMeshView = CoordSystemFactory.build();
 
-        MeshView xAxisMeshView = LineFactory.build(new Point3D(-10, 0, 0), new Point3D(10, 0, 0), Color.RED);
-        MeshView yAxisMeshView = LineFactory.build(new Point3D(0, -10, 0), new Point3D(0, 10, 0), Color.GREEN);
-        MeshView zAxisMeshView = LineFactory.build(new Point3D(0, 0, -10), new Point3D(0, 0, 10), Color.BLUE);
-
-        nonEditGroup.getChildren().addAll(xAxisMeshView, yAxisMeshView, zAxisMeshView);
+        nonEditGroup.getChildren().addAll(coordAxisMeshView);
 
         //add cameraman
         this.cameraMan = new CameraMan(subScene);
