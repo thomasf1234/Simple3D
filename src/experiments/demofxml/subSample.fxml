@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.Group?>
+<BorderPane fx:id="subMainPane" xmlns="http://javafx.com/javafx/8.0.45" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="experiments.demofxml.SubController">
+    <top>
+        <MenuBar>
+            <menus>
+                <Menu fx:id="menuButtons" text="File">
+                    <items>
+                        <MenuItem text="Open 2" onAction="#openTo"/>
+                        <MenuItem text="Save 2"/>
+                        <MenuItem text="Save As 2"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <left>
+    </left>
+    <center>
+        <Group fx:id="root">
+            <Group fx:id="editGroup"/>
+            <Group fx:id="nonEditGroup"/>
+        </Group>
+        <Label fx:id="myLabel" wrapText="true"/>
+    </center>
+    <right>
+    </right>
+    <bottom>
+        <Label text="Version 0.2"/>
+    </bottom>
+</BorderPane>
