@@ -16,6 +16,7 @@ public class CoordSystemFactory {
         TriangleMesh grid = new TriangleMesh();
         ObservableFloatArray points = grid.getPoints();
         ObservableFaceArray faces = grid.getFaces();
+        //need to give the float coordinates representing centre of the pixel, [0,0] to [1,1] everything is warped into this scaled square
         grid.getTexCoords().addAll(
                 0.5f, 0.125f, //gray
                 0.5f, 0.375f,  //red
