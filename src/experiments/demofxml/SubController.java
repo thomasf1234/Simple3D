@@ -1,5 +1,6 @@
 package experiments.demofxml;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -13,5 +14,8 @@ public class SubController {
 
     public void initialize() {
         myLabel.setText("blobby");
+    }
+
+    public void openTo(ActionEvent actionEvent) {
     }
 }

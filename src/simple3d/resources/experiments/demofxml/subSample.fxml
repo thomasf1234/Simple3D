@@ -30,6 +30,6 @@
     <right>
     </right>
     <bottom>
-        <Label text="Version 0.2"/>
+        <Label text="Version 0.1"/>
     </bottom>
 </BorderPane>
