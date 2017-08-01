@@ -5,6 +5,8 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
 <BorderPane fx:id="subMainPane" xmlns="http://javafx.com/javafx/8.0.45" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="experiments.demofxml.SubController"
             minWidth="800"
@@ -23,40 +25,67 @@
     <left>
     </left>
     <center>
-        <Group fx:id="root">
-            <Group fx:id="editGroup"/>
-            <Group fx:id="nonEditGroup"/>
-        </Group>
-        <Label fx:id="myLabel" wrapText="true"/>
+        <!--<Group fx:id="root">-->
+            <!--<Group fx:id="editGroup"/>-->
+            <!--<Group fx:id="nonEditGroup"/>-->
+        <!--</Group>-->
+        <!--<Label fx:id="myLabel" wrapText="true"/>-->
+        <SplitPane orientation="HORIZONTAL" dividerPositions="0.7">
+            <items>
+                <Label maxWidth="Infinity" text="OMGICANTBELIEVIT"/>
+                <Accordion>
+                    <panes>
+                        <TitledPane text="Transforms">
+                            <GridPane hgap="10" vgap="10">
+                                <padding>
+                                    <Insets top="10" left="10" right="10" bottom="10"/>
+                                </padding>
+                                <TextField text="java-Buddy"
+                                           GridPane.columnIndex="0" GridPane.rowIndex="0"
+                                           GridPane.columnSpan="2"/>
+
+                                <Label text="Who are you?"
+                                       GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+                                <TextField id="textfield" fx:id="textfield"
+                                           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                                <Button id="button"  text="Click Me!" fx:id="button"
+                                        GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+                                <Label id="label" fx:id="label"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+
+                            </GridPane>
+                            <!--<HBox>-->
+                                <!--<VBox spacing="10">-->
+                                    <!--<Label text="Antializing"/>-->
+                                    <!--<Label text="Position"/>-->
+                                    <!--<Label text="WireFrame"/>-->
+                                    <!--<padding>-->
+                                        <!--<Insets right="10"/>-->
+                                    <!--</padding>-->
+                                <!--</VBox>-->
+                                <!--<VBox spacing="10" HBox.hgrow="ALWAYS">-->
+                                    <!--<CheckBox fx:id="clickMeCheckBox" text="ClickMea" onAction="#clickMea"/>-->
+                                    <!--<HBox>-->
+                                        <!--<TextField text="0.00"/>-->
+                                        <!--<TextField text="0.00"/>-->
+                                        <!--<TextField text="0.00"/>-->
+                                    <!--</HBox>-->
+                                <!--</VBox>-->
+                            <!--</HBox>-->
+                        </TitledPane>
+                        <TitledPane text="Camera">
+
+                        </TitledPane>
+                    </panes>
+                </Accordion>
+            </items>
+        </SplitPane>
     </center>
     <right>
-        <Accordion style="-fx-border-color:grey">
-            <panes>
-                <TitledPane text="Transforms">
-                    <VBox>
-                        <HBox>
-                            <CheckBox fx:id="clickMeCheckBox" text="ClickMea" onAction="#clickMea"/>
-                            <Label text="bl"></Label>
-                        </HBox>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                        <Label text="bl"></Label>
-                    </VBox>
-                </TitledPane>
-                <TitledPane text="Camera">
-
-                </TitledPane>
-            </panes>
-        </Accordion>
     </right>
     <bottom>
         <Label text="Version 0.1"/>

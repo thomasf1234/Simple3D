@@ -45,13 +45,15 @@ public class Simple3D extends Application {
         Director director = new Director();
         this.sceneState = new Default(scene, director);
 
-        BorderPane innerPane = new BorderPane();
+//        BorderPane innerPane = new BorderPane();
 
         SubScene subScene = director.getSubScene();
-        subScene.heightProperty().bind(innerPane.heightProperty());
-        subScene.widthProperty().bind(innerPane.widthProperty());
-        innerPane.getChildren().add(subScene);
-        outerPane.setCenter(innerPane);
+//        subScene.heightProperty().bind(innerPane.heightProperty());
+//        subScene.widthProperty().bind(innerPane.widthProperty());
+//        innerPane.getChildren().add(subScene);
+//        outerPane.setCenter(innerPane);
+
+        outerPane.setCenter(subScene);
 
         handleKeyboard(director);
         setMouseEvents(director);

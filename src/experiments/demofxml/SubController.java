@@ -11,12 +11,12 @@ public class SubController {
 
     @FXML public Label myLabel;
     @FXML public CheckBox clickMeCheckBox;
-    @FXML public Group root;
-    @FXML public Group editGroup;
-    @FXML public Group nonEditGroup;
+//    @FXML public Group root;
+//    @FXML public Group editGroup;
+//    @FXML public Group nonEditGroup;
 
     public void initialize() {
-        myLabel.setText("blobby");
+//        myLabel.setText("blobby");
     }
 
     public void openTo(ActionEvent actionEvent) {
