@@ -3,16 +3,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.Group?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <BorderPane fx:id="subMainPane" xmlns="http://javafx.com/javafx/8.0.45" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="experiments.demofxml.SubController">
+            fx:controller="experiments.demofxml.SubController"
+            minWidth="800"
+            minHeight="600">
     <top>
         <MenuBar>
             <menus>
-                <Menu fx:id="menuButtons" text="File">
+                <Menu fx:id="menuButtons" text="Help">
                     <items>
-                        <MenuItem text="Open 2" onAction="#openTo"/>
-                        <MenuItem text="Save 2"/>
-                        <MenuItem text="Save As 2"/>
+                        <MenuItem text="About" onAction="#showAboutDialog"/>
                     </items>
                 </Menu>
             </menus>
@@ -28,6 +30,33 @@
         <Label fx:id="myLabel" wrapText="true"/>
     </center>
     <right>
+        <Accordion style="-fx-border-color:grey">
+            <panes>
+                <TitledPane text="Transforms">
+                    <VBox>
+                        <HBox>
+                            <CheckBox fx:id="clickMeCheckBox" text="ClickMea" onAction="#clickMea"/>
+                            <Label text="bl"></Label>
+                        </HBox>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                        <Label text="bl"></Label>
+                    </VBox>
+                </TitledPane>
+                <TitledPane text="Camera">
+
+                </TitledPane>
+            </panes>
+        </Accordion>
     </right>
     <bottom>
         <Label text="Version 0.1"/>

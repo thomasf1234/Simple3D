@@ -1,5 +1,7 @@
 package experiments.demofxml;
 
+//http://o7planning.org/en/11055/javafx-accordion-tutorial
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,7 +23,7 @@ public class Main extends Application {
         // Path to the FXML File
         URL fxmlDocPath = getClass().getResource("/experiments/demofxml/subSample.fxml");
         fxmlLoader.setLocation(fxmlDocPath);
-        
+
         // Create the Pane and all Details
         BorderPane root = (BorderPane) fxmlLoader.load();
         primaryStage.setTitle("Hello World");
