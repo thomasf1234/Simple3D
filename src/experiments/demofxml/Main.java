@@ -21,13 +21,16 @@ public class Main extends Application {
         // Create the FXMLLoader
         FXMLLoader fxmlLoader = new FXMLLoader();
         // Path to the FXML File
-        URL fxmlDocPath = getClass().getResource("/experiments/demofxml/subSample.fxml");
+        URL fxmlDocPath = getClass().getResource("/experiments/demofxml/title.fxml");
         fxmlLoader.setLocation(fxmlDocPath);
-
         // Create the Pane and all Details
         BorderPane root = (BorderPane) fxmlLoader.load();
-        primaryStage.setTitle("Hello World");
-        Scene scene = new Scene(root, 800, 600);
+        //load must be called before controller is initialized
+        TitleController titleController  = fxmlLoader.getController();
+        titleController.setPrimaryStage(primaryStage);
+
+        primaryStage.setTitle("Simple3D - Projects");
+        Scene scene = new Scene(root, 400, 400);
         primaryStage.setScene(scene);
 //        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.show();
