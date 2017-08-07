@@ -73,7 +73,6 @@ public class Main extends Application {
         BorderPane root = (BorderPane) fxmlLoader.load();
         //load must be called before controller is initialized
         Controller controller  = fxmlLoader.getController();
-        controller.setPrimaryStage(primaryStage);
         primaryStage.setTitle("Simple3D - Directory Tree");
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
