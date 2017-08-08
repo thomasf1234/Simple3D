@@ -12,9 +12,14 @@
     <top>
         <MenuBar>
             <menus>
-                <Menu fx:id="menu" text="Project">
+                <Menu fx:id="menu" text="File">
                     <items>
-                        <MenuItem onAction="#newProject" text="New" />
+                        <Menu text="New">
+                            <items>
+                                <MenuItem onAction="#newProject" text="Project" />
+                            </items>
+                        </Menu>
+                        <MenuItem onAction="#openProject" text="Open" />
                     </items>
                 </Menu>
             </menus>
