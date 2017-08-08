@@ -1,6 +1,9 @@
 package experiments.directorytree;
 
 import experiments.directorytree.exceptions.DirectoryNotCreated;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TreeItem;
 

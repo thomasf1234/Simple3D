@@ -2,6 +2,8 @@ package experiments.directorytree.factories;
 
 import experiments.directorytree.ContextMenuTreeView;
 import experiments.directorytree.Util;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -20,91 +22,104 @@ public class FileSystemTreeViewFactory {
         TreeItem<Path> root = Util.getNodesForDirectory(directory);
 
         //Set the factory for our TreeView
-        contextMenuTreeView.setCellFactory(tv ->  {
-            final Tooltip tooltip = new Tooltip();
+        contextMenuTreeView.setCellFactory(tv -> {
             TreeCell<Path> cell = new TreeCell<Path>() {
                 @Override
                 public void updateItem(Path item, boolean empty) {
                     super.updateItem(item, empty);
                     if (empty) {
                         setText(null);
-                        setTooltip(null);
+                        getTooltip().setText(null);
+                        getContextMenu().getItems().clear();
                     } else {
                         String fileName = item.getFileName().toString();
                         setText(fileName);
                         try {
-                            tooltip.setText(item.toRealPath().toString());
+                            updateToolTip(this);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        setTooltip(tooltip);
+
+                        updateContextMenu(this);
                     }
                 }
             };
 
-            return cell ;
+            //must set these
+            cell.setTooltip(new Tooltip());
+            cell.setContextMenu(new ContextMenu());
+
+            return cell;
         });
 
-        // Define the mouse event handler for the TreeView
-        EventHandler mouseEventHandler = new EventHandler<MouseEvent>() {
-            public void handle (MouseEvent mouseEvent){
-                //by default we will ensure that the contextMenu will be hidden if there is one showing
-                boolean hideContextMenu = true;
-                if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
-                    if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                        //Retrieve the node we have clicked on
-                        Node node = mouseEvent.getPickResult().getIntersectedNode();
-
-                        TreeCell treeCell = null;
-                        //Check if we've clicked our TreeCell or child (TODO: recursvive child check)
-                        if (node instanceof TreeCell) {
-                            treeCell = (TreeCell) node;
-                        } else if (node.getParent() != null && node.getParent() instanceof TreeCell) {
-                            treeCell = (TreeCell) node.getParent();
-                        }
-
-                        //treeCell will not have been set if empty space
-                        if (treeCell != null) {
-                            //only interested in our TreeCell<Path> instances
-                            if (treeCell.getItem() instanceof Path) {
-                                TreeCell<Path> pathTreeCell = (TreeCell<Path>) treeCell;
-
-                                Path path = pathTreeCell.getItem();
-
-                                if (path != null) {
-                                    contextMenuTreeView.ensureHideContextMenu();
-                                    String fileName = path.getFileName().toString();
-                                    ContextMenu contextMenu = getRightClickContextMenu(fileName);
-                                    contextMenuTreeView.setContextMenu2(contextMenu);
-                                    contextMenu.show(contextMenuTreeView, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-                                    hideContextMenu = false;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (hideContextMenu == true) {
-                    contextMenuTreeView.ensureHideContextMenu();
-                }
-
-                mouseEvent.consume();
-            }
-        };
-
-        contextMenuTreeView.addEventHandler(MouseEvent.ANY, mouseEventHandler);
         contextMenuTreeView.setRoot(root);
+
+
     }
 
-    protected static ContextMenu getRightClickContextMenu(String s) {
-        ContextMenu contextMenu = new ContextMenu();
+    protected static void updateContextMenu(TreeCell<Path> cell) {
+        ContextMenu contextMenu = cell.getContextMenu();
+        TreeItem<Path> treeItem = cell.getTreeItem();
+        String fileName = treeItem.getValue().getFileName().toString();
         //Sub-Menu
-        Menu addMenu = new Menu(String.format("New %s", s));
+        MenuItem refreshMenuItem = new MenuItem("Refresh");
+        refreshMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                File treeItemFile = treeItem.getValue().toFile();
+                treeItem.getChildren().clear();
+
+                if (treeItemFile.exists()) {
+                    ObservableList<TreeItem<Path>> children = Util.getNodesForDirectory(treeItemFile).getChildren();
+                    treeItem.getChildren().addAll(children);
+                } else {
+                    TreeView<Path> treeView = cell.getTreeView();
+                    if (treeItem == treeView.getRoot()) {
+                        treeView.setRoot(null);
+                    } else {
+                        TreeItem<Path> treeItemParent = treeItem.getParent();
+                        treeItemParent.getChildren().remove(treeItem);
+                    }
+                }
+            }
+        });
+
+        MenuItem deleteMenuItem = new MenuItem("Delete");
+        deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                File treeItemFile = treeItem.getValue().toFile();
+                treeItem.getChildren().clear();
+
+                if (treeItemFile.exists()) {
+                    ObservableList<TreeItem<Path>> children = Util.getNodesForDirectory(treeItemFile).getChildren();
+                    treeItem.getChildren().addAll(children);
+                } else {
+                    TreeView<Path> treeView = cell.getTreeView();
+                    if (treeItem == treeView.getRoot()) {
+                        treeView.setRoot(null);
+                    } else {
+                        TreeItem<Path> treeItemParent = treeItem.getParent();
+                        treeItemParent.getChildren().remove(treeItem);
+                    }
+                }
+            }
+        });
+        
+        Menu addMenu = new Menu(String.format("New %s", fileName));
         MenuItem addModelMenuItem = new MenuItem("Model");
         MenuItem addSceneMenuItem = new MenuItem("Scene");
         addMenu.getItems().addAll(addModelMenuItem, addSceneMenuItem);
-        contextMenu.getItems().addAll(addMenu);
+        contextMenu.getItems().clear();
+        contextMenu.getItems().addAll(refreshMenuItem, addMenu);
         contextMenu.setAutoHide(true);
-        return contextMenu;
+    }
+
+    protected static void updateToolTip(TreeCell<Path> cell) throws IOException {
+        Tooltip tooltip = cell.getTooltip();
+        TreeItem<Path> treeItem = cell.getTreeItem();
+        String realPath = treeItem.getValue().toRealPath().toString();
+        tooltip.setText(realPath);
     }
 }
+
