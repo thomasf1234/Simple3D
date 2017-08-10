@@ -1,6 +1,8 @@
 package experiments.directorytree.factories;
 
+import experiments.directorytree.threads.FileSystemWatcher;
 import experiments.directorytree.tree_views.FileSystemTreeView;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,6 +24,9 @@ public class FileSystemTreeViewFactory {
         fileSystemTreeView.clear();
         TreeItem<Path> root = fileSystemTreeView.getNodesForDirectory(directory);
         fileSystemTreeView.setRoot(root);
+
+//        Platform.runLater(new FileSystemWatcher("fsw", fileSystemTreeView));
+        new FileSystemWatcher("fsw", fileSystemTreeView).start();
 
         //Set the factory for our TreeView
         fileSystemTreeView.setCellFactory(tv -> {
