@@ -25,8 +25,9 @@ public class FileSystemTreeViewFactory {
         TreeItem<Path> root = fileSystemTreeView.getNodesForDirectory(directory);
         fileSystemTreeView.setRoot(root);
 
-//        Platform.runLater(new FileSystemWatcher("fsw", fileSystemTreeView));
-        new FileSystemWatcher("fsw", fileSystemTreeView).start();
+        //start the file system watcher TODO : kick off from launch of application. Make it safe for null directory.
+        FileSystemWatcher fileSystemWatcher = new FileSystemWatcher("fsw", fileSystemTreeView);
+        fileSystemWatcher.start();
 
         //Set the factory for our TreeView
         fileSystemTreeView.setCellFactory(tv -> {
@@ -69,6 +70,7 @@ public class FileSystemTreeViewFactory {
         }
     }
 
+    //TODO : refresh filesystem on action, and raise alert on ContextMenu click if no longer valid
     protected static ContextMenu createContextMenu(TreeCell<Path> cell) {
         ContextMenu contextMenu = new ContextMenu();
         TreeItem<Path> treeItem = cell.getTreeItem();

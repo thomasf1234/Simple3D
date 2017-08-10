@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * Created by tfisher on 10/08/2017.
  */
+
 public class FileSystemWatcher implements Runnable {
 
     private Thread thread;
@@ -54,14 +55,16 @@ public class FileSystemWatcher implements Runnable {
     }
 
     public void start() {
-        if (this.thread == null) {
-            this.thread = new Thread(this, this.threadName);
-            this.thread.start();
+        if (thread == null) {
+            this.thread = new Thread(this, threadName);
+            //prevent this thread from blocking the jvm exiting when gui thread ends
+            thread.setDaemon(true);
+            thread.start();
         }
     }
 
     public Thread getThread() {
-        return this.thread;
+        return thread;
     }
 
 }

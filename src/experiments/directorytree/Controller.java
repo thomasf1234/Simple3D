@@ -22,7 +22,8 @@ public class Controller {
     @FXML public BorderPane borderPane;
     @FXML public FileSystemTreeView fileSystemTreeView;
 
-    private void initialize() {
+    //initialize() must be public
+    public void initialize() {
 
     }
 
