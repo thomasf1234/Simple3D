@@ -4,10 +4,10 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
-<?import experiments.directorytree.ContextMenuTreeView?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
+<?import experiments.directorytree.tree_views.FileSystemTreeView?>
 <BorderPane fx:id="borderPane" minHeight="600" minWidth="800" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="experiments.directorytree.Controller">
     <top>
         <MenuBar>
@@ -28,9 +28,9 @@
     <center>
         <SplitPane dividerPositions="0.3" orientation="HORIZONTAL">
             <items>
-                <ContextMenuTreeView fx:id="contextMenuTreeView" maxWidth="Infinity">
+                <FileSystemTreeView fx:id="fileSystemTreeView" maxWidth="Infinity">
 
-                </ContextMenuTreeView>
+                </FileSystemTreeView>
                 <Pane fx:id="pane">
 
                 </Pane>

@@ -2,6 +2,7 @@ package experiments.directorytree;
 
 import experiments.directorytree.factories.FileSystemTreeViewFactory;
 import experiments.directorytree.prompt.DirectoryPrompt;
+import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -19,14 +20,10 @@ import java.util.Optional;
  */
 public class Controller {
     @FXML public BorderPane borderPane;
-    @FXML public ContextMenuTreeView<Path> contextMenuTreeView;
+    @FXML public FileSystemTreeView fileSystemTreeView;
 
     private void initialize() {
 
-    }
-
-    public ContextMenuTreeView<Path> getContextMenuTreeView() {
-        return contextMenuTreeView;
     }
 
     public void newProject(ActionEvent actionEvent) {
@@ -55,21 +52,21 @@ public class Controller {
 
                 } else {
                     Util.createDirectory(projectDir);
-                    FileSystemTreeViewFactory.build(contextMenuTreeView, projectDir);
+                    FileSystemTreeViewFactory.build(fileSystemTreeView, projectDir);
                 }
             }
         }
-    }
-
-    private Window getWindow() {
-        return borderPane.getScene().getWindow();
     }
 
     public void openProject(ActionEvent actionEvent) {
         File choice = DirectoryPrompt.open(getWindow());
 
         if (choice != null) {
-            FileSystemTreeViewFactory.build(contextMenuTreeView, choice);
+            FileSystemTreeViewFactory.build(fileSystemTreeView, choice);
         }
+    }
+
+    private Window getWindow() {
+        return borderPane.getScene().getWindow();
     }
 }
