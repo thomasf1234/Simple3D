@@ -2,6 +2,7 @@ package experiments.directorytree;
 
 import experiments.directorytree.factories.FileSystemTreeViewFactory;
 import experiments.directorytree.prompt.DirectoryPrompt;
+import experiments.directorytree.threads.FileSystemWatcher;
 import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,10 +22,19 @@ import java.util.Optional;
 public class Controller {
     @FXML public BorderPane borderPane;
     @FXML public FileSystemTreeView fileSystemTreeView;
+    private FileSystemWatcher fileSystemWatcher;
 
     //initialize() must be public
     public void initialize() {
+        //start the file system watcher TODO : kick off from launch of application. Make it safe for null directory.
+        fileSystemWatcher = new FileSystemWatcher("fsw", fileSystemTreeView);
+        fileSystemWatcher.start();
+    }
 
+    public void finish() {
+        SLogger.getInstance().log("Finishing controller");
+        SLogger.getInstance().log("Finishing fileSystemWatcher");
+        fileSystemWatcher.finish();
     }
 
     public void newProject(ActionEvent actionEvent) {

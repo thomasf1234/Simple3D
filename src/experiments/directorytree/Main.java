@@ -11,6 +11,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.Objects;
+import java.util.Properties;
 
 //http://docs.oracle.com/javafx/2/ui_controls/tree-view.htm
 //http://o7planning.org/en/11147/javafx-treeview-tutorial
@@ -62,25 +64,34 @@ import java.net.URL;
 //
 
 public class Main extends Application {
+    private FXMLLoader fxmlLoader;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Create the FXMLLoader
-        FXMLLoader fxmlLoader = new FXMLLoader();
+        this.fxmlLoader = new FXMLLoader();
         // Path to the FXML File
         URL fxmlDocPath = getClass().getResource("/experiments/directorytree/root.fxml");
         fxmlLoader.setLocation(fxmlDocPath);
         // Create the Pane and all Details
         BorderPane root = (BorderPane) fxmlLoader.load();
         //load must be called before controller is initialized
-        Controller controller  = fxmlLoader.getController();
         primaryStage.setTitle("Simple3D - Directory Tree");
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
+    @Override
+    public void stop(){
+        SLogger.getInstance().log("Stage is closing");
+        Controller controller  = fxmlLoader.getController();
+        controller.finish();
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
+
 }
 

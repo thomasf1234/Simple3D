@@ -11,6 +11,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
 
+//http://javajimlondon.blogspot.co.uk/2012/09/javafx-cleanly-closing-fxml-based.html
 public class Main {
 
     public static void main(String[] args) {

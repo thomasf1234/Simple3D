@@ -1,5 +1,6 @@
 package experiments.directorytree.threads;
 
+import experiments.directorytree.SLogger;
 import experiments.directorytree.factories.FileSystemTreeViewFactory;
 import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.application.Platform;
@@ -21,6 +22,7 @@ public class FileSystemWatcher implements Runnable {
     public static int POLL_TIMEOUT_SECONDS = 60;
 
     private enum State { NOT_STARTED, WATCHING, FINISHED }
+    //must not be cached by threads
     private volatile State state;
     private Thread thread;
     private final String threadName;
@@ -40,7 +42,8 @@ public class FileSystemWatcher implements Runnable {
         setState(State.FINISHED);
     }
 
-    private void setState(State state) {
+    //cannot be called in paralle by threads
+    private synchronized  void setState(State state) {
         this.state = state;
     }
 
@@ -53,11 +56,11 @@ public class FileSystemWatcher implements Runnable {
         WatchService watchService = null;
 
         //create initial watchService
-        System.out.println("Creating new watchService");
+        SLogger.getInstance().log("Creating new watchService");
         try {
             watchService = createNewWatchService(fileSystemTreeView);
         } catch (IOException e) {
-            System.out.println("Error ocurred initializing watchService. Thread exiting");
+            SLogger.getInstance().log("Error ocurred initializing watchService. Thread exiting");
             return;
         }
 
@@ -66,41 +69,44 @@ public class FileSystemWatcher implements Runnable {
         //set to WATCHING
         setState(State.WATCHING);
 
-        System.out.println("Entered WATCHING State");
+        SLogger.getInstance().log("Entered WATCHING State");
         while(!isFinished()) {
             try {
                 if (watchService == null) {
                     setState(State.FINISHED);
                 } else {
-                    System.out.println("Triggered watchService.poll()");
+                    SLogger.getInstance().log("Triggered watchService.poll()");
                     //poll for 5 seconds and then exit
                     watchKey = watchService.poll(POLL_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-                    if (watchKey == null) {
-                        System.out.println("No events on queue");
-                    } else {
-                        System.out.println("Triggered watchService.pollEvents()");
-                        List<WatchEvent<?>> events = watchKey.pollEvents();
+                    //thread may have been set to State.FINISHED state during polling
+                    if (!isFinished()) {
+                        if (watchKey == null) {
+                            SLogger.getInstance().log("No events on queue");
+                        } else {
+                            SLogger.getInstance().log("Triggered watchService.pollEvents()");
+                            List<WatchEvent<?>> events = watchKey.pollEvents();
 
-                        //reset watch key so it is available for picking up events
-                        System.out.println("Resetting watchKey");
-                        watchKey.reset();
+                            //reset watch key so it is available for picking up events
+                            SLogger.getInstance().log("Resetting watchKey");
+                            watchKey.reset();
 
-                        //efficient to update once, regardless of event count
-                        System.out.println("queuing an update to the filesystem update");
-                        queueAddFileSystemTreeViewUpdate();
+                            //efficient to update once, regardless of event count
+                            SLogger.getInstance().log("queuing an update to the filesystem update");
+                            queueAddFileSystemTreeViewUpdate();
 
-                        //set a new watchService because the current one is now out of sync
-                        System.out.println("Re-creating watchService");
-                        watchService = createNewWatchService(fileSystemTreeView);
+                            //set a new watchService because the current one is now out of sync
+                            SLogger.getInstance().log("Re-creating watchService");
+                            watchService = createNewWatchService(fileSystemTreeView);
+                        }
                     }
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.toString());
+                SLogger.getInstance().log("Error: " + e.toString());
                 Writer result = new StringWriter();
                 PrintWriter printWriter = new PrintWriter(result);
                 e.printStackTrace(printWriter);
-                System.out.println(result.toString());
+                SLogger.getInstance().log(result.toString());
             }
         }
 

@@ -2,11 +2,6 @@ package experiments.directorytree.factories;
 
 import experiments.directorytree.threads.FileSystemWatcher;
 import experiments.directorytree.tree_views.FileSystemTreeView;
-import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
@@ -24,9 +19,6 @@ public class FileSystemTreeViewFactory {
         fileSystemTreeView.clear();
         TreeItem<Path> root = fileSystemTreeView.getNodesForDirectory(directory);
         fileSystemTreeView.setRoot(root);
-        //start the file system watcher TODO : kick off from launch of application. Make it safe for null directory.
-        FileSystemWatcher fileSystemWatcher = new FileSystemWatcher("fsw", fileSystemTreeView);
-        fileSystemWatcher.start();
 
         //Set the factory for our TreeView
         fileSystemTreeView.setCellFactory(tv -> {
