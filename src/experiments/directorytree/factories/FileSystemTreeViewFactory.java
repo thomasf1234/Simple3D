@@ -1,6 +1,5 @@
 package experiments.directorytree.factories;
 
-import experiments.directorytree.threads.FileSystemWatcher;
 import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
