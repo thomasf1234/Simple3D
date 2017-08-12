@@ -24,7 +24,6 @@ public class FileSystemTreeViewFactory {
         fileSystemTreeView.clear();
         TreeItem<Path> root = fileSystemTreeView.getNodesForDirectory(directory);
         fileSystemTreeView.setRoot(root);
-
         //start the file system watcher TODO : kick off from launch of application. Make it safe for null directory.
         FileSystemWatcher fileSystemWatcher = new FileSystemWatcher("fsw", fileSystemTreeView);
         fileSystemWatcher.start();
@@ -60,7 +59,6 @@ public class FileSystemTreeViewFactory {
 
             if (rootFile.exists()) {
                 if (rootFile.isDirectory()) {
-                    fileSystemTreeView.setRoot(null);
                     TreeItem<Path> newRootTreeItem = fileSystemTreeView.getNodesForDirectory(rootFile);
                     fileSystemTreeView.setRoot(newRootTreeItem);
                 }
