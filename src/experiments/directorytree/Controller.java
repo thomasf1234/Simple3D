@@ -1,7 +1,7 @@
 package experiments.directorytree;
 
 import experiments.directorytree.factories.FileSystemTreeViewFactory;
-import experiments.directorytree.prompt.DirectoryPrompt;
+import experiments.directorytree.prompt.FilePrompt;
 import experiments.directorytree.threads.FileSystemWatcher;
 import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.event.ActionEvent;
@@ -12,6 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Window;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -37,32 +38,14 @@ public class Controller {
         fileSystemWatcher.finish();
     }
 
-    public void newProject(ActionEvent actionEvent) {
-        File choice = DirectoryPrompt.open(getWindow());
+    public void newProject(ActionEvent actionEvent) throws IOException {
+        File parentDir = FilePrompt.openDirectory(getWindow());
 
-        if (choice != null) {
-            TextInputDialog dialog = new TextInputDialog("MyProject");
-            dialog.setTitle("Dialog Title");
-            dialog.setHeaderText("New Project name");
+        if (parentDir != null) {
+            if (parentDir.exists()) {
+                File projectDir = FilePrompt.newDirectory(parentDir);
 
-            Optional<String> result = dialog.showAndWait();
-
-            if (result.isPresent()) {
-                String projectName = result.get().trim();
-
-                Path projectPath = Paths.get(choice.getAbsolutePath(), projectName);
-                File projectDir = projectPath.toFile();
-
-                if (projectDir.exists()) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    String errorMessage = String.format("Directory already exists '%s'.", projectDir.getAbsolutePath());
-                    alert.setHeaderText("Error");
-                    alert.setContentText(errorMessage);
-
-                    alert.showAndWait();
-
-                } else {
-                    Util.createDirectory(projectDir);
+                if (projectDir != null && projectDir.exists()) {
                     FileSystemTreeViewFactory.build(fileSystemTreeView, projectDir);
                 }
             }
@@ -70,7 +53,7 @@ public class Controller {
     }
 
     public void openProject(ActionEvent actionEvent) {
-        File choice = DirectoryPrompt.open(getWindow());
+        File choice = FilePrompt.openDirectory(getWindow());
 
         if (choice != null) {
             FileSystemTreeViewFactory.build(fileSystemTreeView, choice);

@@ -1,11 +1,13 @@
 package experiments.directorytree.factories;
 
+import experiments.directorytree.prompt.FilePrompt;
 import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 //http://www.drdobbs.com/jvm/a-javafx-text-editor-part-1/240142297
@@ -59,7 +61,6 @@ public class FileSystemTreeViewFactory {
         }
     }
 
-    //TODO : refresh filesystem on action, and raise alert on ContextMenu click if no longer valid
     protected static ContextMenu createContextMenu(TreeCell<Path> cell) {
         ContextMenu contextMenu = new ContextMenu();
         TreeItem<Path> treeItem = cell.getTreeItem();
@@ -67,7 +68,35 @@ public class FileSystemTreeViewFactory {
         //Sub-Menu
         Menu newMenu = new Menu("New");
         MenuItem newMenuFileMenuItem = new MenuItem("File");
+        newMenuFileMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileSystemTreeView fileSystemTreeView = (FileSystemTreeView) cell.getTreeView();
+                File treeItemFile = treeItem.getValue().toFile();
+                try {
+                    FilePrompt.newFile(treeItemFile);
+                    refresh(fileSystemTreeView);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         MenuItem newMenuDirectoryMenuItem = new MenuItem("Directory");
+        newMenuDirectoryMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileSystemTreeView fileSystemTreeView = (FileSystemTreeView) cell.getTreeView();
+                File treeItemFile = treeItem.getValue().toFile();
+
+                try {
+                    FilePrompt.newDirectory(treeItemFile);
+                    refresh(fileSystemTreeView);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         newMenu.getItems().addAll(newMenuFileMenuItem, newMenuDirectoryMenuItem);
 
         MenuItem refreshMenuItem = new MenuItem("Refresh");
