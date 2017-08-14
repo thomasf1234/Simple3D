@@ -26,13 +26,13 @@ public class Controller {
 
     //initialize() must be public
     public void initialize() {
-        //start the file system watcher TODO : kick off from launch of application. Make it safe for null directory.
+        //start the file system watcher
         fileSystemWatcher = new FileSystemWatcher("fsw", fileSystemTreeView);
         fileSystemWatcher.start();
     }
 
+    //finish() will run necessary clean up
     public void finish() {
-        SLogger.getInstance().log("Finishing controller");
         SLogger.getInstance().log("Finishing fileSystemWatcher");
         fileSystemWatcher.finish();
     }

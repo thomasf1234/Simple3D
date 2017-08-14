@@ -65,6 +65,11 @@ public class FileSystemTreeViewFactory {
         TreeItem<Path> treeItem = cell.getTreeItem();
         String fileName = treeItem.getValue().getFileName().toString();
         //Sub-Menu
+        Menu newMenu = new Menu("New");
+        MenuItem newMenuFileMenuItem = new MenuItem("File");
+        MenuItem newMenuDirectoryMenuItem = new MenuItem("Directory");
+        newMenu.getItems().addAll(newMenuFileMenuItem, newMenuDirectoryMenuItem);
+
         MenuItem refreshMenuItem = new MenuItem("Refresh");
         refreshMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -93,13 +98,8 @@ public class FileSystemTreeViewFactory {
             }
         });
 
-
-        Menu addMenu = new Menu(String.format("New %s", fileName));
-        MenuItem addModelMenuItem = new MenuItem("Model");
-        MenuItem addSceneMenuItem = new MenuItem("Scene");
-        addMenu.getItems().addAll(addModelMenuItem, addSceneMenuItem);
-        contextMenu.getItems().setAll(refreshMenuItem, deleteMenuItem, addMenu);
         contextMenu.setAutoHide(true);
+        contextMenu.getItems().setAll(newMenu, refreshMenuItem, deleteMenuItem);
 
         return contextMenu;
     }

@@ -59,6 +59,7 @@ public class FileSystemTreeView extends TreeView<Path> {
                 }
             }
         }
+
         return root;
     }
 

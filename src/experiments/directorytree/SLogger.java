@@ -1,5 +1,6 @@
 package experiments.directorytree;
 
+//SingletonLogger
 public class SLogger {
     private static SLogger ourInstance = new SLogger();
 
@@ -7,7 +8,9 @@ public class SLogger {
         return ourInstance;
     }
 
-    public void log(String message) {
+    private SLogger() {}
+
+    public synchronized void log(String message) {
         Config config = Config.getInstance();
         boolean debug = config.getToggle("debug");
 
