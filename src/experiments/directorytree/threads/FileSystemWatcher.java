@@ -22,18 +22,21 @@ import java.util.concurrent.TimeUnit;
 public class FileSystemWatcher implements Runnable {
     public static int POLL_TIMEOUT_SECONDS = 1;
 
-    private enum State { NOT_WATCHING, WATCHING, FINISHED }
-    //must not be cached by threads
-    private volatile State state;
+    private enum State { WAITING, WATCHING, FINISHED }
+
     private Thread thread;
     private final String threadName;
+    //must not be cached by threads
+    private volatile State state;
     private FileSystemTreeView fileSystemTreeView;
     private volatile Path currentRootPath;
+    private WatchService watchService;
+    private WatchKey watchKey;
 
     public FileSystemWatcher(String name, FileSystemTreeView fileSystemTreeView)  {
         this.threadName = name;
         this.fileSystemTreeView = fileSystemTreeView;
-        this.state = State.NOT_WATCHING;
+        this.state = State.WAITING;
     }
 
     public State getState() {
@@ -55,81 +58,125 @@ public class FileSystemWatcher implements Runnable {
 
     @Override
     public void run() {
-        WatchService watchService = null;
-        WatchKey watchKey = null;
+        try {
+            while(!isFinished()) {
+                switch (state) {
+                    case WAITING:
+                        onWaiting();
+                        break;
+                    case WATCHING:
+                        onWatching();
+                        break;
+                    case FINISHED:
+                        onFinished();
+                        break;
+                }
+            }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        } finally {
+            cancelWatchService();
+        }
+    }
 
-        while(!isFinished()) {
-            switch (state) {
-                case NOT_WATCHING:
-                    if (fileSystemTreeView.getRoot() == null) {
-                        try {
-                            this.currentRootPath = null;
-                            SLogger.getInstance().log("fileSystemTreeView is null. Sleeping for 1s");
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        try {
-                            SLogger.getInstance().log("Creating new watchService");
-                            this.currentRootPath = fileSystemTreeView.getRoot().getValue();
-                            watchService = createNewWatchService(fileSystemTreeView);
-                            setState(State.WATCHING);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
-                case WATCHING:
-                    Path newCurrentRootPath = fileSystemTreeView.getRoot().getValue();
-
-                    if (Objects.equals(newCurrentRootPath.toString(), currentRootPath.toString())) {
-                        try {
-                            SLogger.getInstance().log("Triggered watchService.poll() 1s");
-                            //poll for 5 seconds and then exit
-                            watchKey = watchService.poll(POLL_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-                            //thread may have been set to State.FINISHED state during polling
-                            if (!isFinished()) {
-                                if (watchKey == null) {
-                                    SLogger.getInstance().log("No events on queue");
-                                } else {
-                                    SLogger.getInstance().log("Triggered watchService.pollEvents()");
-                                    List<WatchEvent<?>> events = watchKey.pollEvents();
-
-                                    //reset watch key so it is available for picking up events
-                                    SLogger.getInstance().log("Resetting watchKey");
-                                    watchKey.reset();
-
-                                    //efficient to update once, regardless of event count
-                                    SLogger.getInstance().log("queuing an update to the filesystem update");
-                                    queueAddFileSystemTreeViewUpdate();
-
-                                    //set a new watchService because the current one is now out of sync
-                                    SLogger.getInstance().log("Re-creating watchService");
-                                    watchService = createNewWatchService(fileSystemTreeView);
-                                }
-                            }
-                        } catch (Exception e) {
-                            SLogger.getInstance().log("Error: " + e.toString());
-                            Writer result = new StringWriter();
-                            PrintWriter printWriter = new PrintWriter(result);
-                            e.printStackTrace(printWriter);
-                            SLogger.getInstance().log(result.toString());
-                        }
-                    } else {
-                        SLogger.getInstance().log(String.format("fileSystemTreeView.getRoot().getValue() %s", fileSystemTreeView.getRoot().getValue()));
-                        SLogger.getInstance().log(String.format("currentRootPath %s", currentRootPath));
-                        SLogger.getInstance().log("fileSystemTreeView root has been removed while WATCHING. State transfer to NOT_WATCHING");
-                        setState(State.NOT_WATCHING);
-                    }
-
-                    break;
-                case FINISHED:
-                    break;
+    //State WAITING
+    private void onWaiting() {
+        if (fileSystemTreeView.getRoot() == null) {
+            try {
+                SLogger.getInstance().log("fileSystemTreeView is null. Sleeping for 1s");
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                SLogger.getInstance().log("New fileSystemTreeView root detected. State transfer to WATCHING");
+                updateCurrentRootPath();
+                updateWatchService();
+                setState(State.WATCHING);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+    }
 
+    //State WATCHING
+    private void onWatching() {
+        TreeItem<Path> fsRootTreeItem = fileSystemTreeView.getRoot();
+        if (fsRootTreeItem != null && Objects.equals(fsRootTreeItem.getValue().toString(), currentRootPath.toString())) {
+            SLogger.getInstance().log("Triggered watchService.poll() 1s");
+            //poll for 5 seconds and then exit
+            try {
+                watchKey = watchService.poll(POLL_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                setState(State.FINISHED);
+            }
+
+            //thread may have been set to State.FINISHED state during polling
+            if (!isFinished()) {
+                if (watchKey == null) {
+                    SLogger.getInstance().log("No events on queue");
+                } else {
+                    SLogger.getInstance().log("Triggered watchService.pollEvents()");
+                    List<WatchEvent<?>> events = watchKey.pollEvents();
+
+                    //efficient to update once, regardless of event count
+                    SLogger.getInstance().log("queuing an update to the filesystem update");
+                    queueAddFileSystemTreeViewUpdate();
+
+                    //set a new watchService because the current one is now out of sync
+                    SLogger.getInstance().log("Re-creating watchService");
+                    try {
+                        updateWatchService();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            SLogger.getInstance().log("fileSystemTreeView root has been removed while WATCHING. State transfer to WAITING");
+            setState(State.WAITING);
+        }
+    }
+
+    //State FINISHED
+    private void onFinished() {
+        SLogger.getInstance().log("FileSystemWatcher finishing.");
+        cancelWatchService();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    private void updateCurrentRootPath() {
+        this.currentRootPath = fileSystemTreeView.getRoot().getValue();
+    }
+
+    //used to ensure watchService with the filesystem directories registered for changes
+    private void updateWatchService() throws IOException {
+        SLogger.getInstance().log("Updating watchService");
+        //cancel current watching
+        cancelWatchService();
+
+        WatchService newWatchService;
+        TreeItem<Path> rootTreeItem = fileSystemTreeView.getRoot();
+
+        Path rootDir = rootTreeItem.getValue();
+        List<Path> dirPaths = new ArrayList<Path>();
+        appendSubDirectories(dirPaths, rootDir);
+        newWatchService = rootDir.getFileSystem().newWatchService();
+
+        //register all directories for change
+        for (Path dirPath : dirPaths) {
+            dirPath.register(newWatchService, StandardWatchEventKinds.ENTRY_CREATE,
+                    StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+        }
+
+        this.watchService = newWatchService;
+    }
+
+    private void cancelWatchService() {
         //ensure watchKey is cancelled
         if (watchKey != null) {
             watchKey.cancel();
@@ -143,24 +190,6 @@ public class FileSystemWatcher implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
-
-    private WatchService createNewWatchService(FileSystemTreeView fileSystemTreeView) throws IOException {
-        WatchService watchService;
-        TreeItem<Path> rootTreeItem = fileSystemTreeView.getRoot();
-
-        Path rootDir = rootTreeItem.getValue();
-        List<Path> dirPaths = new ArrayList<Path>();
-        appendSubDirectories(dirPaths, rootDir);
-        watchService = rootDir.getFileSystem().newWatchService();
-
-        //register all directories for change
-        for (Path dirPath : dirPaths) {
-            dirPath.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
-        }
-
-        return watchService;
     }
 
     private void queueAddFileSystemTreeViewUpdate() {
@@ -188,7 +217,7 @@ public class FileSystemWatcher implements Runnable {
         if (thread == null) {
             this.thread = new Thread(this, threadName);
             //prevent this thread from blocking the jvm exiting when gui thread ends
-            thread.setDaemon(true);
+            //thread.setDaemon(true);
             thread.start();
         }
     }
