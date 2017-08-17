@@ -2,20 +2,16 @@ package experiments.directorytree;
 
 import experiments.directorytree.factories.FileSystemTreeViewFactory;
 import experiments.directorytree.prompt.FilePrompt;
+import experiments.directorytree.singletons.SLogger;
 import experiments.directorytree.threads.FileSystemWatcher;
 import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Window;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
 
 /**
  * Created by tfisher on 07/08/2017.

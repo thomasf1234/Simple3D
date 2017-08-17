@@ -1,15 +1,15 @@
-package experiments.directorytree;
+package experiments.directorytree.singletons;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
-
-public class Config {
+//http://fxexperience.com/2009/07/free-icons-for-your-javafx-applications/
+public class SConfig {
     private enum State { NOT_LOADED, LOADED }
-    private static Config ourInstance = new Config();
+    private static SConfig ourInstance = new SConfig();
 
-    public static Config getInstance() {
+    public static SConfig getInstance() {
         return ourInstance;
     }
 
@@ -18,7 +18,7 @@ public class Config {
     private Properties toggleProperties;
 
     //default config path to experiments/directorytree/config
-    private Config() {
+    private SConfig() {
         this.configDirPath = Paths.get("src/simple3d/resources/experiments/directorytree/config");
         this.state = State.NOT_LOADED;
         try {

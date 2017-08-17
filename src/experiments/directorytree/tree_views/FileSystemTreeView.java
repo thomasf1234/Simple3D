@@ -15,7 +15,7 @@ import java.util.List;
  * Created by tfisher on 09/08/2017.
  */
 //has knowledge
-public class FileSystemTreeView extends TreeView<Path> {
+public class FileSystemTreeView extends TreeView<File> {
     private List<Path> expandedTreeItemPaths;
 
     public FileSystemTreeView() {
@@ -27,22 +27,23 @@ public class FileSystemTreeView extends TreeView<Path> {
         return expandedTreeItemPaths;
     }
 
-    public TreeItem<Path> getNodesForDirectory(File directory) {
+    public TreeItem<File> getNodesForDirectory(File directory) {
         Path dirPath = directory.toPath();
-        TreeItem<Path> root = new TreeItem<Path>(dirPath);
+        TreeItem<File> root = new TreeItem<File>(directory);
         //set expanded if necessary
-        if (expandedTreeItemPaths.contains(root.getValue())) {
+        if (expandedTreeItemPaths.contains(dirPath)) {
             root.setExpanded(true);
         }
         ChangeListener<Boolean> changeListener = new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 BooleanProperty booleanProperty = (BooleanProperty) observable;
-                TreeItem<Path> treeItem = (TreeItem<Path>) booleanProperty.getBean();
+                TreeItem<File> treeItem = (TreeItem<File>) booleanProperty.getBean();
+                File file = treeItem.getValue();
                 if (oldValue == false && newValue == true) {
-                    expandedTreeItemPaths.add(treeItem.getValue());
+                    expandedTreeItemPaths.add(file.toPath());
                 } else {
-                    expandedTreeItemPaths.remove(treeItem.getValue());
+                    expandedTreeItemPaths.remove(file.toPath());
                 }
             }
         };
@@ -54,7 +55,7 @@ public class FileSystemTreeView extends TreeView<Path> {
                 if (file.isDirectory()) {
                     root.getChildren().add(getNodesForDirectory(file));
                 } else {
-                    TreeItem<Path> treeItem = new TreeItem<Path>(file.toPath());
+                    TreeItem<File> treeItem = new TreeItem<File>(file);
                     root.getChildren().add(treeItem);
                 }
             }

@@ -1,14 +1,18 @@
 package experiments.directorytree.factories;
 
+import experiments.directorytree.Main;
+import experiments.directorytree.Util;
 import experiments.directorytree.prompt.FilePrompt;
 import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.Objects;
 
 //http://www.drdobbs.com/jvm/a-javafx-text-editor-part-1/240142297
 
@@ -16,26 +20,29 @@ import java.nio.file.Path;
  * Created by tfisher on 07/08/2017.
  */
 public class FileSystemTreeViewFactory {
+    private static Image folderImage = new Image(Main.class.getResource("/experiments/directorytree/images/blue-folder.png").toExternalForm());
+
     public static void build(FileSystemTreeView fileSystemTreeView, File directory) {
         fileSystemTreeView.clear();
-        TreeItem<Path> root = fileSystemTreeView.getNodesForDirectory(directory);
+        TreeItem<File> root = fileSystemTreeView.getNodesForDirectory(directory);
         fileSystemTreeView.setRoot(root);
 
         //Set the factory for our TreeView
         fileSystemTreeView.setCellFactory(tv -> {
-            TreeCell<Path> cell = new TreeCell<Path>() {
+            TreeCell<File> cell = new TreeCell<File>() {
                 @Override
-                public void updateItem(Path item, boolean empty) {
+                public void updateItem(File item, boolean empty) {
                     super.updateItem(item, empty);
                     if (empty) {
                         setText(null);
                         setTooltip(null);
                         setContextMenu(null);
+                        setGraphic(null);
                     } else {
-                        String fileName = item.getFileName().toString();
-                        setText(fileName);
+                        setText(createText(this));
                         setTooltip(createTooltip(this));
                         setContextMenu(createContextMenu(this));
+                        setGraphic(createGraphic(this));
                     }
                 }
             };
@@ -47,12 +54,12 @@ public class FileSystemTreeViewFactory {
     //assumes build has been called
     public static void refresh(FileSystemTreeView fileSystemTreeView) {
         if (fileSystemTreeView.getRoot() != null) {
-            TreeItem<Path> root = fileSystemTreeView.getRoot();
-            File rootFile = root.getValue().toFile();
+            TreeItem<File> root = fileSystemTreeView.getRoot();
+            File rootFile = root.getValue();
 
             if (rootFile.exists()) {
                 if (rootFile.isDirectory()) {
-                    TreeItem<Path> newRootTreeItem = fileSystemTreeView.getNodesForDirectory(rootFile);
+                    TreeItem<File> newRootTreeItem = fileSystemTreeView.getNodesForDirectory(rootFile);
                     fileSystemTreeView.setRoot(newRootTreeItem);
                 }
             } else {
@@ -61,10 +68,11 @@ public class FileSystemTreeViewFactory {
         }
     }
 
-    protected static ContextMenu createContextMenu(TreeCell<Path> cell) {
+    protected static ContextMenu createContextMenu(TreeCell<File> cell) {
         ContextMenu contextMenu = new ContextMenu();
-        TreeItem<Path> treeItem = cell.getTreeItem();
-        String fileName = treeItem.getValue().getFileName().toString();
+        TreeItem<File> treeItem = cell.getTreeItem();
+        File treeItemFile = treeItem.getValue();
+        String fileName = treeItemFile.getName();
         //Sub-Menu
         Menu newMenu = new Menu("New");
         MenuItem newMenuFileMenuItem = new MenuItem("File");
@@ -72,7 +80,7 @@ public class FileSystemTreeViewFactory {
             @Override
             public void handle(ActionEvent event) {
                 FileSystemTreeView fileSystemTreeView = (FileSystemTreeView) cell.getTreeView();
-                File treeItemFile = treeItem.getValue().toFile();
+
                 try {
                     FilePrompt.newFile(treeItemFile);
                     refresh(fileSystemTreeView);
@@ -87,7 +95,6 @@ public class FileSystemTreeViewFactory {
             @Override
             public void handle(ActionEvent event) {
                 FileSystemTreeView fileSystemTreeView = (FileSystemTreeView) cell.getTreeView();
-                File treeItemFile = treeItem.getValue().toFile();
 
                 try {
                     FilePrompt.newDirectory(treeItemFile);
@@ -112,8 +119,6 @@ public class FileSystemTreeViewFactory {
         deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                File treeItemFile = treeItem.getValue().toFile();
-
                 if (treeItemFile.exists()) {
                     boolean deleted = treeItemFile.delete();
 
@@ -134,13 +139,44 @@ public class FileSystemTreeViewFactory {
     }
 
 
-    protected static Tooltip createTooltip(TreeCell<Path> cell) {
+    protected static String createText(TreeCell<File> cell) {
+        TreeItem<File> treeItem = cell.getTreeItem();
+        File file = treeItem.getValue();
+        String fileName = file.getName();
+
+        return fileName;
+    }
+
+    protected static Tooltip createTooltip(TreeCell<File> cell) {
         Tooltip tooltip = new Tooltip();
-        TreeItem<Path> treeItem = cell.getTreeItem();
-        String absolutePath = treeItem.getValue().toAbsolutePath().toString();
+        TreeItem<File> treeItem = cell.getTreeItem();
+        File file = treeItem.getValue();
+        String absolutePath = file.getAbsolutePath();
         tooltip.setText(absolutePath);
 
         return tooltip;
+    }
+
+    protected static ImageView createGraphic(TreeCell<File> cell) {
+        ImageView imageView = new ImageView();
+        TreeItem<File> treeItem = cell.getTreeItem();
+        File file = treeItem.getValue();
+
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                imageView.setImage(folderImage);
+            } else {
+                String extension = Util.getFileExtension(file);
+
+                if (Objects.equals(extension, ".txt")) {
+
+                } else {
+                }
+            }
+        }
+
+
+        return imageView;
     }
 }
 

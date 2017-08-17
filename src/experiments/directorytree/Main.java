@@ -4,6 +4,7 @@ package experiments.directorytree;
  * Created by tfisher on 04/08/2017.
  */
 
+import experiments.directorytree.singletons.SLogger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,8 +12,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.Objects;
-import java.util.Properties;
 
 //http://docs.oracle.com/javafx/2/ui_controls/tree-view.htm
 //http://o7planning.org/en/11147/javafx-treeview-tutorial

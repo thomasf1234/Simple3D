@@ -1,6 +1,7 @@
 package experiments.directorytree.threads;
 
-import experiments.directorytree.SLogger;
+import com.sun.nio.file.SensitivityWatchEventModifier;
+import experiments.directorytree.singletons.SLogger;
 import experiments.directorytree.factories.FileSystemTreeViewFactory;
 import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.application.Platform;
@@ -102,7 +103,7 @@ public class FileSystemWatcher implements Runnable {
 
     //State WATCHING
     private void onWatching() {
-        TreeItem<Path> fsRootTreeItem = fileSystemTreeView.getRoot();
+        TreeItem<File> fsRootTreeItem = fileSystemTreeView.getRoot();
         if (fsRootTreeItem != null && Objects.equals(fsRootTreeItem.getValue().toString(), currentRootPath.toString())) {
             SLogger.getInstance().log("Triggered watchService.poll() 1s");
             //poll for 5 seconds and then exit
@@ -150,7 +151,10 @@ public class FileSystemWatcher implements Runnable {
 
 
     private void updateCurrentRootPath() {
-        this.currentRootPath = fileSystemTreeView.getRoot().getValue();
+        TreeItem<File> rootTreeItem = fileSystemTreeView.getRoot();
+        File rootFile = rootTreeItem.getValue();
+
+        this.currentRootPath = rootFile.toPath();
     }
 
     //used to ensure watchService with the filesystem directories registered for changes
@@ -160,17 +164,18 @@ public class FileSystemWatcher implements Runnable {
         cancelWatchService();
 
         WatchService newWatchService;
-        TreeItem<Path> rootTreeItem = fileSystemTreeView.getRoot();
+        TreeItem<File> rootTreeItem = fileSystemTreeView.getRoot();
 
-        Path rootDir = rootTreeItem.getValue();
+        File rootDir = rootTreeItem.getValue();
         List<Path> dirPaths = new ArrayList<Path>();
         appendSubDirectories(dirPaths, rootDir);
-        newWatchService = rootDir.getFileSystem().newWatchService();
+        newWatchService = rootDir.toPath().getFileSystem().newWatchService();
 
         //register all directories for change
         for (Path dirPath : dirPaths) {
-            dirPath.register(newWatchService, StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+            WatchEvent.Kind<?>[] events = { StandardWatchEventKinds.ENTRY_CREATE,  StandardWatchEventKinds.ENTRY_MODIFY,  StandardWatchEventKinds.ENTRY_DELETE};
+            //https://www.reddit.com/r/java/comments/3vtv8i/beware_javaniofilewatchservice_is_subtly_broken/
+            dirPath.register(newWatchService, events, SensitivityWatchEventModifier.HIGH);
         }
 
         this.watchService = newWatchService;
@@ -198,16 +203,14 @@ public class FileSystemWatcher implements Runnable {
         });
     }
 
-    private void appendSubDirectories(List<Path> subdirPaths, Path dirPath) {
-        File directory = dirPath.toFile();
-
+    private void appendSubDirectories(List<Path> subdirPaths, File directory) {
         if (directory.isDirectory()) {
 
-            subdirPaths.add(dirPath);
+            subdirPaths.add(directory.toPath());
             for (File file : directory.listFiles()) {
                 if (file.isDirectory()) {
-                    Path subdirPath = file.toPath();
-                    appendSubDirectories(subdirPaths, subdirPath);
+                    File subdir = file;
+                    appendSubDirectories(subdirPaths, subdir);
                 }
             }
         }

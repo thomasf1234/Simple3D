@@ -5,6 +5,8 @@ import javafx.scene.control.Alert;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by tfisher on 07/08/2017.
@@ -45,5 +47,19 @@ public class Util {
             throw new FileNotCreated(file.getAbsolutePath());
         }
 
+    }
+
+    public static String getFileExtension(File file) {
+        //default return null
+        String extension = null;
+        String fileName = file.getName();
+        Pattern fileExtensionPattern = Pattern.compile("\\.[^\\.]+$");
+        Matcher matcher = fileExtensionPattern.matcher(fileName);
+
+        if (matcher.find()) {
+            extension = matcher.group();
+        }
+
+        return extension;
     }
 }

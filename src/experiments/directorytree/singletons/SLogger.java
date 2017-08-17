@@ -1,4 +1,4 @@
-package experiments.directorytree;
+package experiments.directorytree.singletons;
 
 //SingletonLogger
 public class SLogger {
@@ -11,7 +11,7 @@ public class SLogger {
     private SLogger() {}
 
     public synchronized void log(String message) {
-        Config config = Config.getInstance();
+        SConfig config = SConfig.getInstance();
         boolean debug = config.getToggle("debug");
 
         if (debug) { System.out.println(message); }
