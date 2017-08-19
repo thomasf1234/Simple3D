@@ -3,6 +3,7 @@ package experiments.directorytree.factories;
 import experiments.directorytree.Main;
 import experiments.directorytree.Util;
 import experiments.directorytree.prompt.FilePrompt;
+import experiments.directorytree.singletons.SImages;
 import experiments.directorytree.tree_views.FileSystemTreeView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,8 +21,6 @@ import java.util.Objects;
  * Created by tfisher on 07/08/2017.
  */
 public class FileSystemTreeViewFactory {
-    private static Image folderImage = new Image(Main.class.getResource("/experiments/directorytree/images/blue-folder.png").toExternalForm());
-
     public static void build(FileSystemTreeView fileSystemTreeView, File directory) {
         fileSystemTreeView.clear();
         TreeItem<File> root = fileSystemTreeView.getNodesForDirectory(directory);
@@ -133,7 +132,7 @@ public class FileSystemTreeViewFactory {
         });
 
         contextMenu.setAutoHide(true);
-        contextMenu.getItems().setAll(newMenu, refreshMenuItem, deleteMenuItem);
+        contextMenu.getItems().setAll(newMenu, new SeparatorMenuItem(), refreshMenuItem, deleteMenuItem);
 
         return contextMenu;
     }
@@ -164,17 +163,17 @@ public class FileSystemTreeViewFactory {
 
         if (file.exists()) {
             if (file.isDirectory()) {
-                imageView.setImage(folderImage);
+                imageView.setImage(SImages.getInstance().getImage("blue-folder.png"));
             } else {
                 String extension = Util.getFileExtension(file);
 
                 if (Objects.equals(extension, ".txt")) {
 
                 } else {
+                    imageView.setImage(SImages.getInstance().getImage("file.png"));
                 }
             }
         }
-
 
         return imageView;
     }

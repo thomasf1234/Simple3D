@@ -5,31 +5,33 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 //http://fxexperience.com/2009/07/free-icons-for-your-javafx-applications/
-public class SConfig {
-    private enum State { NOT_LOADED, LOADED }
-    private static SConfig ourInstance = new SConfig();
+public class SConfig extends SLoader {
+    private static SConfig ourInstance;
 
     public static SConfig getInstance() {
         return ourInstance;
     }
 
-    private volatile State state;
     private Path configDirPath;
     private Properties toggleProperties;
 
     //default config path to experiments/directorytree/config
     private SConfig() {
+        super();
         this.configDirPath = Paths.get("src/simple3d/resources/experiments/directorytree/config");
-        this.state = State.NOT_LOADED;
-        try {
-            ensureLoaded();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    public State getState() {
-        return state;
+    @Override
+    protected void load() throws IOException {
+        this.toggleProperties = loadProperties("toggles.properties");
+    }
+
+    //initializes ourInstance. Multiple calls have no effect.
+    public static synchronized void init() throws IOException {
+        if (ourInstance == null) {
+            ourInstance = new SConfig();
+            ourInstance.ensureLoaded();
+        }
     }
 
     public Path getConfigDirPath() {
@@ -46,17 +48,6 @@ public class SConfig {
         }
 
         return boolValue;
-    }
-
-    public boolean isLoaded() {
-        return state == State.LOADED;
-    }
-
-    private synchronized void ensureLoaded() throws IOException {
-        if (!isLoaded()) {
-            this.toggleProperties = loadProperties("toggles.properties");
-            this.state = State.LOADED;
-        }
     }
 
     private Properties loadProperties(String relativePropertiesPath) throws IOException {

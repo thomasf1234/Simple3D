@@ -164,7 +164,7 @@ public class CameraMan {
         if (camera == null) {
             this.camera = new PerspectiveCamera(true);
             camera.setNearClip(0.01);
-            camera.setFarClip(100000.0);
+            camera.setFarClip(10000.0);
             camera.getTransforms().addAll(xRotate, yRotate);
             scene.setCamera(camera);
             setCameraPosition();

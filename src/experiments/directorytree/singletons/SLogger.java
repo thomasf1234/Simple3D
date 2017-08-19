@@ -1,14 +1,28 @@
 package experiments.directorytree.singletons;
 
-//SingletonLogger
-public class SLogger {
-    private static SLogger ourInstance = new SLogger();
+import java.io.IOException;
 
-    public static SLogger getInstance() {
+//SingletonLogger
+public class SLogger extends SLoader {
+    private static SLogger ourInstance;
+
+    public static SLogger getInstance(){
         return ourInstance;
     }
 
     private SLogger() {}
+
+    @Override
+    protected void load() throws IOException {
+
+    }
+
+    public static synchronized void init() throws IOException {
+        if(ourInstance == null) {
+            ourInstance = new SLogger();
+            ourInstance.ensureLoaded();
+        }
+    }
 
     public synchronized void log(String message) {
         SConfig config = SConfig.getInstance();

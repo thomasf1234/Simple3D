@@ -5,6 +5,7 @@ import javafx.scene.control.Alert;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,5 +62,9 @@ public class Util {
         }
 
         return extension;
+    }
+
+    public static String unixToPlatIndepPath(String path) {
+        return path.replaceAll("/", File.separator);
     }
 }

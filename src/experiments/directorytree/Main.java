@@ -4,6 +4,8 @@ package experiments.directorytree;
  * Created by tfisher on 04/08/2017.
  */
 
+import experiments.directorytree.singletons.SConfig;
+import experiments.directorytree.singletons.SImages;
 import experiments.directorytree.singletons.SLogger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 
 //http://docs.oracle.com/javafx/2/ui_controls/tree-view.htm
@@ -88,8 +91,16 @@ public class Main extends Application {
         controller.finish();
     }
 
-    public static void main(String[] args) {
+    //TODO : bootstrap singletons here
+    public static void main(String[] args) throws IOException {
+        initSingletons();
         launch(args);
+    }
+
+    private static void initSingletons() throws IOException {
+        SLogger.init();
+        SConfig.init();
+        SImages.init();
     }
 
 }
