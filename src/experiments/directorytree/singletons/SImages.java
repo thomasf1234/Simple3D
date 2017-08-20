@@ -1,6 +1,5 @@
 package experiments.directorytree.singletons;
 
-import experiments.directorytree.Util;
 import javafx.scene.image.Image;
 
 import java.io.*;
@@ -8,10 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 //http://fxexperience.com/2009/07/free-icons-for-your-javafx-applications/
-public class SImages extends SLoader {
+public class SImages extends Loader {
     private static SImages ourInstance;
 
     public static SImages getInstance() {

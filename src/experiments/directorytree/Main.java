@@ -7,14 +7,13 @@ package experiments.directorytree;
 import experiments.directorytree.singletons.SConfig;
 import experiments.directorytree.singletons.SImages;
 import experiments.directorytree.singletons.SLogger;
+import experiments.directorytree.singletons.directors.SProjectDirector;
+import experiments.directorytree.singletons.directors.STitleDirector;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
 
 //http://docs.oracle.com/javafx/2/ui_controls/tree-view.htm
 //http://o7planning.org/en/11147/javafx-treeview-tutorial
@@ -22,6 +21,8 @@ import java.net.URL;
 //icon size should be 16x16
 //https://stackoverflow.com/questions/27894108/how-do-i-make-a-mouse-click-event-be-acknowledged-by-a-treeitem-in-a-treeview
 //https://stackoverflow.com/questions/15792090/javafx-treeview-item-action-event
+//https://gist.github.com/jewelsea/2305098
+//http://www.java2s.com/Code/Java/JavaFX/Stagecloseevent.htm
 
 //
 //       updateItem
@@ -66,20 +67,10 @@ import java.net.URL;
 //
 
 public class Main extends Application {
-    private FXMLLoader fxmlLoader;
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Create the FXMLLoader
-        this.fxmlLoader = new FXMLLoader();
-        // Path to the FXML File
-        URL fxmlDocPath = getClass().getResource("/experiments/directorytree/root.fxml");
-        fxmlLoader.setLocation(fxmlDocPath);
-        // Create the Pane and all Details
-        BorderPane root = (BorderPane) fxmlLoader.load();
-        //load must be called before controller is initialized
-        primaryStage.setTitle("Simple3D - Directory Tree");
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = STitleDirector.getInstance().getScene();
+        primaryStage.setTitle("Simple3D");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -87,11 +78,10 @@ public class Main extends Application {
     @Override
     public void stop(){
         SLogger.getInstance().log("Stage is closing");
-        Controller controller  = fxmlLoader.getController();
-        controller.finish();
+        SProjectDirector.getInstance().finish();
+        STitleDirector.getInstance().finish();
     }
 
-    //TODO : bootstrap singletons here
     public static void main(String[] args) throws IOException {
         initSingletons();
         launch(args);
@@ -101,6 +91,8 @@ public class Main extends Application {
         SLogger.init();
         SConfig.init();
         SImages.init();
+        STitleDirector.init();
+        SProjectDirector.init();
     }
 
 }

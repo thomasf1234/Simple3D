@@ -2,12 +2,12 @@ package experiments.directorytree.singletons;
 
 import java.io.IOException;
 
-public abstract class SLoader {
+public abstract class Loader {
     private enum State { NOT_LOADED, LOADED }
 
     protected volatile State state;
 
-    public SLoader() {
+    public Loader() {
         this.state = State.NOT_LOADED;
     }
 

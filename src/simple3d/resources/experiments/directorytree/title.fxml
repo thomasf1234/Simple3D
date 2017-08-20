@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="titleBorderPane" minHeight="200" minWidth="200" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="experiments.directorytree.controllers.TitleController">
+    <center>
+        <BorderPane prefHeight="200.0" prefWidth="200.0">
+            <center>
+                <VBox alignment="CENTER">
+                    <Label contentDisplay="TOP" text="Simple3D IDE">
+                        <font>
+                            <Font size="30.0" />
+                        </font>
+                        <graphic>
+                            <ImageView>
+                                <image>
+                                    <Image preserveRatio="true" requestedWidth="120" smooth="true" url="experiments/demofxml/3D_cube.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Label>
+                    <Hyperlink focusTraversable="false" text="Create New Project" onAction="#newProject">
+                        <graphic>
+                            <ImageView>
+                                <image>
+                                    <Image preserveRatio="true" requestedWidth="30" smooth="true" url="experiments/demofxml/3D_cube.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Hyperlink>
+                    <Hyperlink focusTraversable="false" text="Open Project" onAction="#openProject">
+                        <graphic>
+                            <ImageView>
+                                <image>
+                                    <Image preserveRatio="true" requestedWidth="30" smooth="true" url="experiments/demofxml/3D_cube.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Hyperlink>
+                </VBox>
+            </center>
+        </BorderPane>
+    </center>
+    <right>
+    </right>
+    <bottom>
+        <Label text="Version 0.1" />
+    </bottom>
+</BorderPane>

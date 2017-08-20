@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 //http://fxexperience.com/2009/07/free-icons-for-your-javafx-applications/
-public class SConfig extends SLoader {
+public class SConfig extends Loader {
     private static SConfig ourInstance;
 
     public static SConfig getInstance() {

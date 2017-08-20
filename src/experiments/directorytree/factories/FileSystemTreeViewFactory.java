@@ -132,7 +132,12 @@ public class FileSystemTreeViewFactory {
         });
 
         contextMenu.setAutoHide(true);
-        contextMenu.getItems().setAll(newMenu, new SeparatorMenuItem(), refreshMenuItem, deleteMenuItem);
+
+        if (treeItemFile.isDirectory()) {
+            contextMenu.getItems().setAll(newMenu, new SeparatorMenuItem(), refreshMenuItem, deleteMenuItem);
+        } else {
+            contextMenu.getItems().setAll(deleteMenuItem);
+        }
 
         return contextMenu;
     }
@@ -168,7 +173,9 @@ public class FileSystemTreeViewFactory {
                 String extension = Util.getFileExtension(file);
 
                 if (Objects.equals(extension, ".txt")) {
-
+                    imageView.setImage(SImages.getInstance().getImage("file.png"));
+                } else if (Objects.equals(extension, ".simple3d")) {
+                    imageView.setImage(SImages.getInstance().getImage("3D_cube.png"));
                 } else {
                     imageView.setImage(SImages.getInstance().getImage("file.png"));
                 }

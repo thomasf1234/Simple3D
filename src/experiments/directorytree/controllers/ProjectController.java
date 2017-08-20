@@ -1,4 +1,4 @@
-package experiments.directorytree;
+package experiments.directorytree.controllers;
 
 import experiments.directorytree.factories.FileSystemTreeViewFactory;
 import experiments.directorytree.prompt.FilePrompt;
@@ -16,23 +16,9 @@ import java.io.IOException;
 /**
  * Created by tfisher on 07/08/2017.
  */
-public class Controller {
+public class ProjectController extends Controller {
     @FXML public BorderPane borderPane;
     @FXML public FileSystemTreeView fileSystemTreeView;
-    private FileSystemWatcher fileSystemWatcher;
-
-    //initialize() must be public
-    public void initialize() {
-        //start the file system watcher
-        fileSystemWatcher = new FileSystemWatcher("fsw", fileSystemTreeView);
-        fileSystemWatcher.start();
-    }
-
-    //finish() will run necessary clean up
-    public void finish() {
-        SLogger.getInstance().log("Finishing fileSystemWatcher");
-        fileSystemWatcher.finish();
-    }
 
     public void newProject(ActionEvent actionEvent) throws IOException {
         File parentDir = FilePrompt.openDirectory(getWindow());
@@ -54,6 +40,10 @@ public class Controller {
         if (choice != null) {
             FileSystemTreeViewFactory.build(fileSystemTreeView, choice);
         }
+    }
+
+    public FileSystemTreeView getFileSystemTreeView() {
+        return fileSystemTreeView;
     }
 
     private Window getWindow() {

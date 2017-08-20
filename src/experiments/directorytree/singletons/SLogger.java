@@ -3,7 +3,7 @@ package experiments.directorytree.singletons;
 import java.io.IOException;
 
 //SingletonLogger
-public class SLogger extends SLoader {
+public class SLogger extends Loader {
     private static SLogger ourInstance;
 
     public static SLogger getInstance(){
