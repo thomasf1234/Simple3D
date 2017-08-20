@@ -8,7 +8,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
 <?import experiments.directorytree.tree_views.FileSystemTreeView?>
-<BorderPane fx:id="borderPane" minHeight="600" minWidth="800" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="experiments.directorytree.controllers.ProjectController">
+<BorderPane fx:id="root" minHeight="600" minWidth="800" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="experiments.directorytree.controllers.ProjectController">
     <top>
         <MenuBar>
             <menus>

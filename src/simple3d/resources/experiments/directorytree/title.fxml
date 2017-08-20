@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="titleBorderPane" minHeight="200" minWidth="200" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="experiments.directorytree.controllers.TitleController">
+<BorderPane fx:id="root" minHeight="200" minWidth="200" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="experiments.directorytree.controllers.TitleController">
     <center>
         <BorderPane prefHeight="200.0" prefWidth="200.0">
             <center>

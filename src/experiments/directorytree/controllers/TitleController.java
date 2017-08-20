@@ -17,9 +17,6 @@ import java.io.IOException;
 import java.net.URL;
 
 public class TitleController extends Controller {
-    @FXML
-    public BorderPane titleBorderPane;
-
     public void newProject(ActionEvent actionEvent) throws IOException {
         try {
             File parentDir = FilePrompt.openDirectory(getStage());
@@ -48,9 +45,5 @@ public class TitleController extends Controller {
                 getStage().setScene(SProjectDirector.getInstance().getScene());
             }
         }
-    }
-
-    private Stage getStage() {
-        return (Stage) titleBorderPane.getScene().getWindow();
     }
 }

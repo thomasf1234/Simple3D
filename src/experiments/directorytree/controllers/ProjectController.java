@@ -17,11 +17,10 @@ import java.io.IOException;
  * Created by tfisher on 07/08/2017.
  */
 public class ProjectController extends Controller {
-    @FXML public BorderPane borderPane;
     @FXML public FileSystemTreeView fileSystemTreeView;
 
     public void newProject(ActionEvent actionEvent) throws IOException {
-        File parentDir = FilePrompt.openDirectory(getWindow());
+        File parentDir = FilePrompt.openDirectory(getStage());
 
         if (parentDir != null) {
             if (parentDir.exists()) {
@@ -35,7 +34,7 @@ public class ProjectController extends Controller {
     }
 
     public void openProject(ActionEvent actionEvent) {
-        File choice = FilePrompt.openDirectory(getWindow());
+        File choice = FilePrompt.openDirectory(getStage());
 
         if (choice != null) {
             FileSystemTreeViewFactory.build(fileSystemTreeView, choice);
@@ -44,9 +43,5 @@ public class ProjectController extends Controller {
 
     public FileSystemTreeView getFileSystemTreeView() {
         return fileSystemTreeView;
-    }
-
-    private Window getWindow() {
-        return borderPane.getScene().getWindow();
     }
 }
