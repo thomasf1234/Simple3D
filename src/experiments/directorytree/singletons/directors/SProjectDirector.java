@@ -23,7 +23,7 @@ public class SProjectDirector extends Director {
     private FileSystemWatcher fileSystemWatcher;
 
     public SProjectDirector() {
-        super("/experiments/directorytree/project.fxml");
+        super("/experiments/directorytree/project.fxml", 800, 600);
     }
 
     @Override

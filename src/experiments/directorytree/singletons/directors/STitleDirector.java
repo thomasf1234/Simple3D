@@ -20,7 +20,7 @@ public class STitleDirector extends Director {
     }
 
     public STitleDirector() {
-        super("/experiments/directorytree/title.fxml");
+        super("/experiments/directorytree/title.fxml", 400, 400);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package experiments.directorytree.prompt;
 
-import experiments.directorytree.Util;
-import experiments.directorytree.factories.FileSystemTreeViewFactory;
+import experiments.directorytree.utils.FileUtils;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.DirectoryChooser;
@@ -55,8 +54,9 @@ public class FilePrompt {
     public static File newDirectory(File parentDirectory) throws IOException {
         File directory = null;
         TextInputDialog dialog = new TextInputDialog("");
-        dialog.setTitle("Confirmation");
-        dialog.setHeaderText("Enter directory name");
+        dialog.setTitle("Create new directory");
+        dialog.setHeaderText("");
+        dialog.setContentText("Enter directory name");
 
         Optional<String> result = dialog.showAndWait();
 
@@ -75,7 +75,7 @@ public class FilePrompt {
                 alert.showAndWait();
 
             } else {
-                Util.createDirectory(directory);
+                FileUtils.createDirectory(directory);
             }
         }
 
@@ -85,8 +85,9 @@ public class FilePrompt {
     public static File newFile(File parentDirectory) throws IOException {
         File file = null;
         TextInputDialog dialog = new TextInputDialog("");
-        dialog.setTitle("Confirmation");
-        dialog.setHeaderText("Enter file name");
+        dialog.setTitle("Create new file");
+        dialog.setHeaderText("");
+        dialog.setContentText("Enter file name");
 
         Optional<String> result = dialog.showAndWait();
 
@@ -105,7 +106,7 @@ public class FilePrompt {
                 alert.showAndWait();
 
             } else {
-                Util.createFile(file);
+                FileUtils.createFile(file);
             }
         }
 

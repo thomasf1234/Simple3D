@@ -31,6 +31,8 @@ public class ProjectController extends Controller {
                 }
             }
         }
+
+        actionEvent.consume();
     }
 
     public void openProject(ActionEvent actionEvent) {
@@ -39,6 +41,8 @@ public class ProjectController extends Controller {
         if (choice != null) {
             FileSystemTreeViewFactory.build(fileSystemTreeView, choice);
         }
+
+        actionEvent.consume();
     }
 
     public FileSystemTreeView getFileSystemTreeView() {

@@ -1,0 +1,62 @@
+#lineCountTextArea .scroll-pane .content{
+    -fx-background-color: #b3b3b3;
+}
+
+#lineCountTextArea  .scroll-bar:vertical:disabled {
+    -fx-opacity: 0.0;
+}
+
+#lineCountTextArea  .scroll-bar .increment-button {
+  visibility: hidden;
+  -fx-opacity: 0.0;
+}
+
+#lineCountTextArea  .scroll-bar .decrement-button {
+  visibility: hidden;
+  -fx-opacity: 0.0;
+}
+
+#lineCountTextArea  .scroll-bar:vertical {
+  visibility: hidden;
+  -fx-background-color: transparent;
+  -fx-opacity: 0.0;
+}
+
+#lineCountTextArea  .scroll-bar:vertical .track-background {
+  visibility: hidden;
+  -fx-opacity: 0.0;
+}
+
+#lineCountTextArea  .scroll-bar:vertical .track {
+  visibility: hidden;
+  -fx-opacity: 0.0;
+}
+
+#lineCountTextArea  .hide-thumb .scroll-bar:vertical .thumb {
+  visibility: hidden;
+  -fx-background-color: transparent;
+  -fx-opacity: 0.0;
+}
+
+#lineCountTextArea {
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
+}
+
+
+
+.text-area:focused {
+    -fx-highlight-fill: #476cbd;
+}
+
+.text-area .content {
+    -fx-padding: 10px;
+    -fx-text-fill: gray;
+    -fx-highlight-fill: #476cbd;
+}
+
+.text-area:disabled {
+    -fx-opacity: 1.0;
+}
+
+

@@ -26,14 +26,15 @@ public class TitleController extends Controller {
                     File projectDir = FilePrompt.newDirectory(parentDir);
 
                     if (projectDir != null && projectDir.exists()) {
-                        FileSystemTreeViewFactory.build(SProjectDirector.getInstance().getController().getFileSystemTreeView(), projectDir);
+                        loadProjectScene(projectDir);
                     }
                 }
             }
-            getStage().setScene(SProjectDirector.getInstance().getScene());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        actionEvent.consume();
     }
 
     public void openProject(ActionEvent actionEvent) {
@@ -41,9 +42,18 @@ public class TitleController extends Controller {
 
         if (parentDir != null) {
             if (parentDir.exists()) {
-                FileSystemTreeViewFactory.build(SProjectDirector.getInstance().getController().getFileSystemTreeView(), parentDir);
-                getStage().setScene(SProjectDirector.getInstance().getScene());
+                loadProjectScene(parentDir);
             }
         }
+
+        actionEvent.consume();
+    }
+
+    private void loadProjectScene(File rootDir) {
+        Stage stage = getStage();
+
+        FileSystemTreeViewFactory.build(SProjectDirector.getInstance().getController().getFileSystemTreeView(), rootDir);
+        stage.setScene(SProjectDirector.getInstance().getScene());
+
     }
 }

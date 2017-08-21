@@ -1,69 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.TextArea?>
+<?import experiments.notepad.UnfocusableTextArea?>
 <?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
-<BorderPane xmlns:fx="http://javafx.com/fxml">
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<?import experiments.notepad.LineCountTextArea?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.control.Separator?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121">
     <top>
         <MenuBar>
             <menus>
                 <Menu text="File">
                     <items>
-                        <MenuItem text="New"></MenuItem>
-                        <MenuItem text="Open..."></MenuItem>
-                        <MenuItem text="Save"></MenuItem>
-                        <MenuItem text="Save As..."></MenuItem>
-                        <SeparatorMenuItem></SeparatorMenuItem>
-                        <MenuItem text="Page Setup..."></MenuItem>
-                        <MenuItem text="Print"></MenuItem>
-                        <SeparatorMenuItem></SeparatorMenuItem>
-                        <MenuItem text="Exit"></MenuItem>
+                        <MenuItem text="New"/>
+                        <MenuItem text="Open..."/>
+                        <MenuItem text="Save"/>
+                        <MenuItem text="Save As..."/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Page Setup..."/>
+                        <MenuItem text="Print"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Exit"/>
                     </items>
                 </Menu>
                 <Menu text="Edit">
                     <items>
-                        <MenuItem text="Undo"></MenuItem>
-                        <SeparatorMenuItem></SeparatorMenuItem>
-                        <MenuItem text="Cut"></MenuItem>
-                        <MenuItem text="Copy"></MenuItem>
-                        <MenuItem text="Paste"></MenuItem>
-                        <MenuItem text="Delete"></MenuItem>
-                        <SeparatorMenuItem></SeparatorMenuItem>
-                        <MenuItem text="Find..."></MenuItem>
-                        <MenuItem text="Find Next"></MenuItem>
-                        <MenuItem text="Replace..."></MenuItem>
-                        <MenuItem text="Go To..."></MenuItem>
-                        <SeparatorMenuItem></SeparatorMenuItem>
-                        <MenuItem text="Select All"></MenuItem>
-                        <MenuItem text="Time/Date"></MenuItem>
+                        <MenuItem text="Undo"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Cut"/>
+                        <MenuItem text="Copy"/>
+                        <MenuItem text="Paste"/>
+                        <MenuItem text="Delete"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Find..."/>
+                        <MenuItem text="Find Next"/>
+                        <MenuItem text="Replace..."/>
+                        <MenuItem text="Go To..."/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Select All"/>
+                        <MenuItem text="Time/Date"/>
                     </items>
                 </Menu>
                 <Menu text="Format">
                     <items>
-                        <MenuItem text="Word Wrap"></MenuItem>
-                        <MenuItem text="Font..."></MenuItem>
+                        <MenuItem text="Word Wrap"/>
+                        <MenuItem text="Font..."/>
                     </items>
                 </Menu>
                 <Menu text="View">
                     <items>
-                        <MenuItem text="Status Bar"></MenuItem>
+                        <MenuItem text="Status Bar"/>
                     </items>
                 </Menu>
                 <Menu text="Help">
                     <items>
-                        <MenuItem text="View Help"></MenuItem>
-                        <SeparatorMenuItem></SeparatorMenuItem>
-                        <MenuItem text="About Notepad"></MenuItem>
+                        <MenuItem text="View Help"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="About Notepad"/>
                     </items>
                 </Menu>
             </menus>
         </MenuBar>
     </top>
+    <left>
+        <UnfocusableTextArea id="lineCountTextArea"
+                             wrapText="false"
+                             disable="true"
+                             editable="false"
+                             focusTraversable="false"
+                             maxWidth="100"
+                             nodeOrientation="RIGHT_TO_LEFT">
+            <font>
+                <Font name="Courier" size="14">
+                </Font>
+            </font>
+        </UnfocusableTextArea>
+    </left>
     <center>
-        <TextArea>
-        </TextArea>
+        <LineCountTextArea>
+            <font>
+                <Font name="Courier" size="14">
+                </Font>
+            </font>
+        </LineCountTextArea>
     </center>
 </BorderPane>

@@ -14,8 +14,12 @@ public class Director extends Loader {
     private FXMLLoader fxmlLoader;
     private Controller controller;
     private Scene scene;
+    private int sceneWidth;
+    private int sceneHeight;
 
-    public Director(String fxmlPath) {
+    public Director(String fxmlPath, int sceneWidth, int sceneHeight) {
+        this.sceneWidth = sceneWidth;
+        this.sceneHeight = sceneHeight;
         this.fxmlPath = fxmlPath;
     }
 
@@ -47,6 +51,6 @@ public class Director extends Loader {
         //load must be called before controller is initialized
         this.controller = fxmlLoader.getController();
 
-        this.scene = new Scene(root, 400, 400);
+        this.scene = new Scene(root, sceneWidth, sceneHeight);
     }
 }
