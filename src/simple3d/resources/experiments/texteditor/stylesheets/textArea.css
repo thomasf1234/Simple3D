@@ -1,6 +1,5 @@
-#lineCountTextArea .scroll-pane .content{
-    -fx-background-color: #b3b3b3;
-}
+/*
+https://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html
 
 #lineCountTextArea  .scroll-bar:vertical:disabled {
     -fx-opacity: 0.0;
@@ -37,12 +36,31 @@
   -fx-background-color: transparent;
   -fx-opacity: 0.0;
 }
+*/
+
+#lineCountTextArea .content {
+    -fx-background-color: #b3b3b3;
+}
+
+
 
 #lineCountTextArea {
   -fx-focus-color: transparent;
   -fx-faint-focus-color: transparent;
 }
 
+#lineCountTextArea .scroll-pane {
+  -fx-vbar-policy: never;
+}
+
+#lineCountTextArea .scroll-pane {
+  -fx-vbar-policy: never;
+}
+
+#mainTextArea .scroll-pane {
+  -fx-vbar-policy: always;
+  -fx-hbar-policy: always;
+}
 
 
 .text-area:focused {

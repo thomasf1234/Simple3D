@@ -1,4 +1,4 @@
-package experiments.notepad;
+package experiments.texteditor;
 
 import com.sun.deploy.util.StringUtils;
 import javafx.beans.value.ChangeListener;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineCountTextArea extends TextArea {
-    public static String lineSeparator = String.format("%n");
+    public static final String lineSeparator = String.format("%n");
     protected volatile int lineCount;
     protected List<String> lineNumbersList;
     protected TextArea lineCountDestTextArea;
@@ -19,6 +19,7 @@ public class LineCountTextArea extends TextArea {
         this.lineCount = 1;
         this.lineNumbersList = new ArrayList<String>();
         lineNumbersList.add("1");
+//        JavaCompiler
 
         textProperty().addListener(new ChangeListener<String>() {
             @Override

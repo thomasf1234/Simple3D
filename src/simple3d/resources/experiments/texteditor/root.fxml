@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import experiments.notepad.UnfocusableTextArea?>
+<?import experiments.texteditor.UnfocusableTextArea?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<?import experiments.notepad.LineCountTextArea?>
+<?import experiments.texteditor.LineCountTextArea?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.TextFlow?>
@@ -86,7 +86,7 @@
         </UnfocusableTextArea>
     </left>
     <center>
-        <LineCountTextArea>
+        <LineCountTextArea id="mainTextArea">
             <font>
                 <Font name="Courier" size="14">
                 </Font>

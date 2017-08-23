@@ -1,4 +1,4 @@
-package experiments.notepad;
+package experiments.texteditor;
 
 public class StopWatch {
     public long t0;

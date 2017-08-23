@@ -1,4 +1,4 @@
-package experiments.notepad;
+package experiments.texteditor;
 
 import javafx.scene.control.TextArea;
 
