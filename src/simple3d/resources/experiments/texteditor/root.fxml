@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import experiments.texteditor.UnfocusableTextArea?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.TextArea?>
+<?import experiments.texteditor.CodeArea?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
-
-<?import experiments.texteditor.LineCountTextArea?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.text.TextFlow?>
-<?import javafx.scene.control.Separator?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/8.0.121">
     <top>
         <MenuBar>
             <menus>
@@ -71,26 +62,7 @@
             </menus>
         </MenuBar>
     </top>
-    <left>
-        <UnfocusableTextArea id="lineCountTextArea"
-                             wrapText="false"
-                             disable="true"
-                             editable="false"
-                             focusTraversable="false"
-                             maxWidth="100"
-                             nodeOrientation="RIGHT_TO_LEFT">
-            <font>
-                <Font name="Courier" size="14">
-                </Font>
-            </font>
-        </UnfocusableTextArea>
-    </left>
     <center>
-        <LineCountTextArea id="mainTextArea">
-            <font>
-                <Font name="Courier" size="14">
-                </Font>
-            </font>
-        </LineCountTextArea>
+        <CodeArea/>
     </center>
 </BorderPane>

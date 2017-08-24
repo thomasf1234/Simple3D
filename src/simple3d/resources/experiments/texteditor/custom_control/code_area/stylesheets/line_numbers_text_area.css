@@ -1,0 +1,33 @@
+/*
+https://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html
+*/
+
+.text-area .content {
+    -fx-background-color: #b3b3b3;
+}
+
+.text-area {
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
+}
+
+.text-area .scroll-pane {
+  -fx-vbar-policy: never;
+  -fx-hbar-policy: never;
+}
+
+.text-area:focused {
+    -fx-highlight-fill: #476cbd;
+}
+
+.text-area .content {
+    -fx-padding: 10px;
+    -fx-text-fill: gray;
+    -fx-highlight-fill: #476cbd;
+}
+
+.text-area:disabled {
+    -fx-opacity: 1.0;
+}
+
+

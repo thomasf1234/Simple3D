@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import experiments.texteditor.UnfocusableTextArea?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextArea?>
+<fx:root type="HBox"
+         xmlns:fx="http://javafx.com/fxml"
+         maxWidth="Infinity">
+    <children>
+        <UnfocusableTextArea fx:id="lineNumbersTextArea"
+                             stylesheets="experiments/texteditor/custom_control/code_area/stylesheets/line_numbers_text_area.css"
+                             wrapText="false"
+                             disable="true"
+                             editable="false"
+                             focusTraversable="false"
+                             maxWidth="100"
+                             minWidth="100"
+                             nodeOrientation="RIGHT_TO_LEFT">
+            <font>
+                <Font name="Courier" size="14">
+                </Font>
+            </font>
+        </UnfocusableTextArea>
+        <TextArea fx:id="codeTextArea"
+                  stylesheets="experiments/texteditor/custom_control/code_area/stylesheets/code_area.css"
+                  maxWidth="Infinity"
+                  wrapText="false">
+            <font>
+                <Font name="Courier" size="14">
+                </Font>
+            </font>
+        </TextArea>
+    </children>
+</fx:root>

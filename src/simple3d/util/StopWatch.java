@@ -1,4 +1,4 @@
-package experiments.texteditor;
+package simple3d.util;
 
 public class StopWatch {
     public long t0;
