@@ -11,6 +11,7 @@ https://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html
   -fx-faint-focus-color: transparent;
 }
 
+
 .text-area .scroll-pane {
   -fx-vbar-policy: never;
   -fx-hbar-policy: never;

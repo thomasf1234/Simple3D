@@ -6,16 +6,18 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/8.0.121">
+            xmlns="http://javafx.com/javafx/8.0.121"
+            fx:controller="experiments.texteditor.controllers.RootController"
+            fx:id="root">
     <top>
         <MenuBar>
             <menus>
                 <Menu text="File">
                     <items>
                         <MenuItem text="New"/>
-                        <MenuItem text="Open..."/>
-                        <MenuItem text="Save"/>
-                        <MenuItem text="Save As..."/>
+                        <MenuItem text="Open..." onAction="#openFile"/>
+                        <MenuItem text="Save" onAction="#saveFile"/>
+                        <MenuItem text="Save As..." onAction="#saveAsFile"/>
                         <SeparatorMenuItem/>
                         <MenuItem text="Page Setup..."/>
                         <MenuItem text="Print"/>
@@ -25,7 +27,7 @@
                 </Menu>
                 <Menu text="Edit">
                     <items>
-                        <MenuItem text="Undo"/>
+                        <MenuItem text="Undo" onAction="#undo"/>
                         <SeparatorMenuItem/>
                         <MenuItem text="Cut"/>
                         <MenuItem text="Copy"/>
@@ -63,6 +65,6 @@
         </MenuBar>
     </top>
     <center>
-        <CodeArea/>
+        <CodeArea fx:id="codeArea"/>
     </center>
 </BorderPane>

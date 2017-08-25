@@ -1,9 +1,11 @@
 package experiments.directorytree.prompt;
 
+import experiments.directorytree.factories.FileSystemTreeViewFactory;
 import experiments.directorytree.utils.FileUtils;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 import java.io.File;
@@ -16,6 +18,74 @@ import java.util.Optional;
  * Created by tfisher on 08/08/2017.
  */
 public class FilePrompt {
+    public static File openFile(Window window) {
+        File returnValue = null;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open file");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        File choice = fileChooser.showOpenDialog(window);
+
+
+        if (choice == null) {
+            //User cancelled dialog
+        } else {
+            if (choice.exists()) {
+                if (choice.isDirectory()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText("Could not open file");
+                    alert.setContentText(String.format("%s is a directory.", choice));
+                    alert.showAndWait();
+                } else {
+                    //valid choice
+                    returnValue = choice;
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Could not open file");
+                alert.setContentText(String.format("%s no longer exists", choice));
+                alert.showAndWait();
+            }
+        }
+        return returnValue;
+    }
+
+    public static File saveFile(Window window, String fileContents) {
+        File returnValue = null;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save file");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        //Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File choice = fileChooser.showSaveDialog(window);
+
+        if (choice == null) {
+            //User cancelled dialog
+        } else {
+            if (choice.isDirectory()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Could not open file");
+                alert.setContentText(String.format("%s is a directory.", choice));
+                alert.showAndWait();
+            } else {
+                //valid choice
+                try {
+                    FileUtils.write(choice, fileContents);
+                    returnValue = choice;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText("Error occurred saving file");
+                    alert.setContentText(String.format("%s", e.getMessage()));
+                    alert.showAndWait();
+                }
+            }
+
+        }
+        return returnValue;
+    }
+
+
     //returns null if user cancelled dialog
     public static File openDirectory(Window window) {
         File returnValue;

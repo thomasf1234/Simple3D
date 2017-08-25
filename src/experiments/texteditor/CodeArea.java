@@ -1,24 +1,25 @@
 package experiments.texteditor;
 
 import com.sun.deploy.util.StringUtils;
+import experiments.directorytree.utils.FileUtils;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CodeArea extends HBox {
-    public static final String lineSeparator = String.format("%n");
+
     public static final String fxmlPath = "/experiments/texteditor/custom_control/code_area/root.fxml";
 
     @FXML public UnfocusableTextArea lineNumbersTextArea;
@@ -26,6 +27,7 @@ public class CodeArea extends HBox {
 
     protected volatile int lineCount;
     protected List<String> lineNumbersList;
+    protected File openFile;
 
     public CodeArea() {
         loadFXML();
@@ -45,6 +47,19 @@ public class CodeArea extends HBox {
         textProperty().set(value);
     }
 
+    public boolean hasOpenFile() { return openFile != null; }
+
+    public File getOpenFile() {
+        return openFile;
+    }
+
+    public synchronized void openFile(File file) throws IOException {
+        codeTextArea.clear();
+        String fileContents = FileUtils.read(file);
+        setText(fileContents);
+        this.openFile = file;
+    }
+
     public StringProperty textProperty() {
         return codeTextArea.textProperty();
     }
@@ -59,6 +74,16 @@ public class CodeArea extends HBox {
 
     public ObjectProperty<Font> fontProperty() {
         return codeTextArea.fontProperty();
+    }
+
+    public boolean isUndoable() {
+        return codeTextArea.isUndoable();
+    }
+
+    public void undo() {
+        if (isUndoable()) {
+            codeTextArea.undo();
+        }
     }
 
     protected void init() {
@@ -111,7 +136,7 @@ public class CodeArea extends HBox {
     }
 
     protected String getLineNumbersText() {
-        return StringUtils.join(lineNumbersList, lineSeparator);
+        return StringUtils.join(lineNumbersList, FileUtils.lineSeparator);
     }
 
     protected void setLineCount(int lineCount) {

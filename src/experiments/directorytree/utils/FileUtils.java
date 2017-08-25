@@ -3,16 +3,19 @@ package experiments.directorytree.utils;
 import experiments.directorytree.exceptions.FileNotCreated;
 import javafx.scene.control.Alert;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static javax.script.ScriptEngine.FILENAME;
 
 /**
  * Created by tfisher on 07/08/2017.
  */
 public class FileUtils {
+    public static final String lineSeparator = String.format("%n");
+
     public static void createFile(File file) throws IOException {
         createFile(file, false);
     }
@@ -48,6 +51,68 @@ public class FileUtils {
             throw new FileNotCreated(file.getAbsolutePath());
         }
 
+    }
+
+    public static void write(File file, String s) throws IOException {
+        OutputStream os = null;
+        OutputStreamWriter osw = null;
+        BufferedWriter bw = null;
+
+        try {
+            os = new FileOutputStream(file);
+            osw = new OutputStreamWriter(os);
+            bw = new BufferedWriter(osw);
+
+            bw.write(s);
+        } finally {
+            if (bw != null) {
+                bw.close();
+            }
+
+            if (osw != null) {
+                osw.close();
+            }
+
+            if (os != null) {
+                os.close();
+            }
+        }
+    }
+
+    public static String read(File file) throws IOException {
+        InputStream is = null;
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+
+        try {
+            is = new FileInputStream(file);
+            isr = new InputStreamReader(is);
+            br = new BufferedReader(isr);
+
+            String line = br.readLine();
+            StringBuilder sb = new StringBuilder();
+
+            while (line != null) {
+                sb.append(line).append(lineSeparator);
+                line = br.readLine();
+            }
+
+            String fileContents = sb.toString();
+
+            return fileContents;
+        } finally {
+            if (br != null) {
+                br.close();
+            }
+
+            if (isr != null) {
+                isr.close();
+            }
+
+            if (is != null) {
+                is.close();
+            }
+        }
     }
 
     public static String getFileExtension(File file) {

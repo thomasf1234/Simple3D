@@ -1,26 +1,16 @@
 package experiments.texteditor;
 
-import java.io.IOException;
-
 import experiments.debug.DebugUtil;
 import experiments.directorytree.singletons.SConfig;
 import experiments.directorytree.singletons.SImages;
 import experiments.directorytree.singletons.SLogger;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 //https://stackoverflow.com/questions/17192770/check-given-file-is-simple-text-file-using-java
 //javac TestClass.java
@@ -46,8 +36,10 @@ public class Main extends Application {
             primaryStage.setTitle("Untitled - TextEditor");
             primaryStage.show();
 
-            DebugUtil debugUtil = new DebugUtil();
-            debugUtil.launchDebugStage(scene.getRoot());
+            if (SConfig.getInstance().getToggle("debug")) {
+                DebugUtil debugUtil = new DebugUtil();
+                debugUtil.launchDebugStage(scene.getRoot());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
